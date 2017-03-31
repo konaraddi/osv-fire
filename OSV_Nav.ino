@@ -34,13 +34,20 @@ void setup(){
     /*makes the OSV revolve on a point, unless the include tags failed (or library incorrectly imported)
     OR, if the OSV moved forward, the motors' wires need to be swapped in a place or more
     */
-    /*motor1->run(FORWARD);
+    motor1->run(FORWARD);
     motor2->run(FORWARD);
     motor3->run(BACKWARD);
-    motor4->run(BACKWARD);*/
+    motor4->run(BACKWARD);
 }
 
 void loop(){
-  
-}
 
+
+
+    /*
+    The statement below will run forever so
+    this current loop() will never finish running.
+    The purpose of this is for the loop() to never repeat.
+    */
+    while(1);
+}
