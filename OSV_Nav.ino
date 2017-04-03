@@ -9,6 +9,8 @@
 #include <Adafruit_MotorShield.h>
 #include "utility/Adafruit_MS_PWMServoDriver.h"
 
+Adafruit_MotorShield AFMS = Adafruit_MotorShield();
+
 float currentX;
 float currentY;
 float currentTheta;
@@ -18,7 +20,7 @@ Marker marker(108); //look at QR code's back for number
 RF_Comm rf(&mySerial, &marker);
 
 void setup(){
-
+    AFMS.begin();
 }
 
 void loop(){
@@ -49,8 +51,6 @@ is time-based. It will be changed to rotations in the future. The direction
 indicates FORWARD or BACKWARD.
 */
 void moveStraight(int speed, int duration, char direction){
-    Adafruit_MotorShield AFMS = Adafruit_MotorShield();
-    AFMS.begin();
     Adafruit_DCMotor *motor1 = AFMS.getMotor(1);
     Adafruit_DCMotor *motor2 = AFMS.getMotor(2);
     Adafruit_DCMotor *motor3 = AFMS.getMotor(3);
