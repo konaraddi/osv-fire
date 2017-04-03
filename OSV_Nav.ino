@@ -63,7 +63,7 @@ void setup(){
 }
 
 void loop(){
-    //TODO Optimize exiting the wall after the basics work
+    //TODO Optimize exiting the wall after the basics work (i.e. implement Travel Time algorithm)
     //EXIT THE WALL THROUGH POINT A (FOR NOW, WILL OPTIMIZE LATER)
     moveTowardsPoint(Ax, Ay);
     moveTowardsPoint(EXIT_Ax, EXIT_Ay);
@@ -194,25 +194,15 @@ void moveTowardsPoint(float desiredX, float desiredY){
 }
 
 void turnClockWise(float radiansToTurn){
-    //need to conduct test to figure out how long it takes for the OSV to make a 360 pivot
-    for(int i= 0; i < 4; i++){
-        motor[i]->AFMS.getMotor(i + 1);
-        motor[i]->setSpeed(typicalSpeed);
-    }
-    //intentionally kept ouside of previous loop so the motors are set before they run
-    for(int i= 0; i < 4; i++){
-        if(i < 2){
-            motor[i]->run(FORWARD);
-        }else{
-            motor[i]->run(BACKWARD);
-        }
-    }
-    //the predicted time it would take to face
-    //TODO write code to check if it actually faced that direction and recursively call something to fix it
-    delay((radiansToTurn / PI ) * timeToPivot360);
+    turn(radiansToTurn, 'C');
 }
-//TODO since the below is pretty much the same as the above, create a helper method for both to reduce the storage this takes up
 void turnCounterClockWise(float radiansToTurn){
+    turn(radiansToTurn, 'W');
+}
+
+//if direction is C, the Clockwise turning.
+//if direction is not C, then counterclockWise turning.
+void turn(float radiansToTurn, char direction){
     //need to conduct test to figure out how long it takes for the OSV to make a 360 pivot
     for(int i= 0; i < 4; i++){
         motor[i]->AFMS.getMotor(i + 1);
@@ -221,9 +211,17 @@ void turnCounterClockWise(float radiansToTurn){
     //intentionally kept ouside of previous loop so the motors are set before they run
     for(int i= 0; i < 4; i++){
         if(i < 2){
-            motor[i]->run(BACKWARD);
+            if(direction == 'C'){
+                motor[i]->run(FORWARD);
+            }else{
+                motor[i]->run(BACKWARD)
+            }
         }else{
-            motor[i]->run(FORWARD);
+            if(direction == 'C'){
+                motor[i]->run(BACKWARD);
+            }else{
+                motor[i]->run(FORWARD);
+            }
         }
     }
     //the predicted time it would take to face
