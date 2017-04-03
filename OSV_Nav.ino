@@ -15,8 +15,6 @@ Handle constants appropriately.
 #include <Adafruit_MotorShield.h>
 #include "utility/Adafruit_MS_PWMServoDriver.h"
 
-const float PI= 3.14159265359;
-
 Adafruit_MotorShield AFMS = Adafruit_MotorShield();
 Adafruit_DCMotor *motor[4];
 
@@ -205,7 +203,7 @@ void turnCounterClockWise(float radiansToTurn){
 void turn(float radiansToTurn, char direction){
     //need to conduct test to figure out how long it takes for the OSV to make a 360 pivot
     for(int i= 0; i < 4; i++){
-        motor[i]->AFMS.getMotor(i + 1);
+        motor[i]= AFMS.getMotor(i + 1);
         motor[i]->setSpeed(typicalSpeed);
     }
     //intentionally kept ouside of previous loop so the motors are set before they run
@@ -214,7 +212,7 @@ void turn(float radiansToTurn, char direction){
             if(direction == 'C'){
                 motor[i]->run(FORWARD);
             }else{
-                motor[i]->run(BACKWARD)
+                motor[i]->run(BACKWARD);
             }
         }else{
             if(direction == 'C'){
