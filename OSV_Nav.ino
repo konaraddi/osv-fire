@@ -15,6 +15,8 @@ Handle constants appropriately.
 #include <Adafruit_MotorShield.h>
 #include "utility/Adafruit_MS_PWMServoDriver.h"
 
+const float PI= 3.14159265359;
+
 Adafruit_MotorShield AFMS = Adafruit_MotorShield();
 Adafruit_DCMotor *motor[4];
 
@@ -22,8 +24,10 @@ SoftwareSerial mySerial(8, 9);//the ports to which the virtual RX and TX go in
 Marker marker(108); //look at QR code's back for number
 RF_Comm rf(&mySerial, &marker);
 
+//TODO replace the stuff below with results from tests
 //assume OSV takes 1 second to rotate its wheels once
-float timeToRotateOnce= 1000;
+const float timeToRotateOnce= 1000;
+const float timeToPivot360= 1000;
 
 //circumference of our OSV's wheels (in meters)
 float circumferenceOfOSVWheel= 2;
@@ -33,26 +37,36 @@ float currentX;
 float currentY;
 float currentTheta;
 
-//Point A
-float Ax= 0.5;
-float Ay= 0.325;
+const int typicalSpeed= 50; //0-255 (PWM)
 
-//Point B
-float Bx= 0.5;
-float By= 1.675;
+//FOR EXIT THE WALL
+//Area A (an area to which the OSV should go to before making an exit)
+const float Ax= 0.5;
+const float Ay= 0.325;
+//Area B (an area to which the OSV should go to before making an exit)
+const float Bx= 0.5;
+const float By= 1.675;
+//Point of EXIT from area A
+const float EXIT_Ax= 0.1;
+const float EXIT_Ay= 0.325;
+//Point of EXIT from area B
+const float EXIT_Bx= 0.1;
+const float EXIT_By= 1.675;
 
 void setup(){
     Serial.begin(9600);
+    rf.startMission();
     AFMS.begin();
 
     //obtain OSV's landing coordinates
-    //updateCurrentLocation();
+    updateCurrentLocation();
 }
 
 void loop(){
     //TODO Optimize exiting the wall after the basics work
     //EXIT THE WALL THROUGH POINT A (FOR NOW, WILL OPTIMIZE LATER)
-
+    moveTowardsPoint(Ax, Ay);
+    moveTowardsPoint(EXIT_Ax, EXIT_Ay);
 
     //TRAVEL TOWARDS FIRE SITE
 
@@ -159,18 +173,60 @@ void moveTowardsPoint(float desiredX, float desiredY){
     }
 
     float distanceToMove= sqrt(pow(Ymovement,2) + pow(Xmovement, 2));
-    moveStraight(50, (distanceToMove / circumferenceOfOSVWheel) * timeToRotateOnce, 'F');
+    moveStraight(typicalSpeed, (distanceToMove / circumferenceOfOSVWheel) * timeToRotateOnce, 'F');
 
     updateCurrentLocation();
-    if(currentX > desiredX + 0.1 || currentX < desiredX - 0.1 || currentY > desiredY + 0.1 || currentY < desiredY - 0.1{
+
+    float permissibleErrorForX= 0.1;//the OSV's X coordinate must be within +/- this of the desired X
+    float permissibleErrorForY= 0.1;//the OSV's Y coordinate must be within +/- this of the desired Y
+    float permissibleErrorForTheta= 0.1;//the OSV's Theta coordinate must be within +/- this of the desired theta
+
+    if(currentX > desiredX + permissibleErrorForX || currentX < desiredX - permissibleErrorForX ||
+        currentY > desiredY + permissibleErrorForY || currentY < desiredY - permissibleErrorForY ||
+        currentTheta < theta - permissibleErrorForTheta || currentTheta > theta + permissibleErrorForTheta){
+        //recursively called until OSV's orientation an position are correct
         moveTowardsPoint(desiredX, desiredY);
+        //TODO
+        //Write code that prevents the OSV from being stuck in a repetitive motion where the OSV goes too over or too under
+        //This should be prevented in turnClockWise and turnCounterClockWise but have a safetynet here too.
     }
-    
+
 }
 
 void turnClockWise(float radiansToTurn){
-
+    //need to conduct test to figure out how long it takes for the OSV to make a 360 pivot
+    for(int i= 0; i < 4; i++){
+        motor[i]->AFMS.getMotor(i + 1);
+        motor[i]->setSpeed(typicalSpeed);
+    }
+    //intentionally kept ouside of previous loop so the motors are set before they run
+    for(int i= 0; i < 4; i++){
+        if(i < 2){
+            motor[i]->run(FORWARD);
+        }else{
+            motor[i]->run(BACKWARD);
+        }
+    }
+    //the predicted time it would take to face
+    //TODO write code to check if it actually faced that direction and recursively call something to fix it
+    delay((radiansToTurn / PI ) * timeToPivot360);
 }
+//TODO since the below is pretty much the same as the above, create a helper method for both to reduce the storage this takes up
 void turnCounterClockWise(float radiansToTurn){
-
+    //need to conduct test to figure out how long it takes for the OSV to make a 360 pivot
+    for(int i= 0; i < 4; i++){
+        motor[i]->AFMS.getMotor(i + 1);
+        motor[i]->setSpeed(typicalSpeed);
+    }
+    //intentionally kept ouside of previous loop so the motors are set before they run
+    for(int i= 0; i < 4; i++){
+        if(i < 2){
+            motor[i]->run(BACKWARD);
+        }else{
+            motor[i]->run(FORWARD);
+        }
+    }
+    //the predicted time it would take to face
+    //TODO write code to check if it actually faced that direction and recursively call something to fix it
+    delay((radiansToTurn / PI ) * timeToPivot360);
 }
