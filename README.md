@@ -10,6 +10,7 @@ libraries before uploading:
     the Arduino IDE)
 
 ##To-Do:
+Write code for Milestone 5.
 Finished implementing short-burst approach in moveTowardsPoint().
 
 ## FAQs
