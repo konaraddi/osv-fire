@@ -1,5 +1,5 @@
-/*TODO
-Handle constants appropriately.
+/*TODO TODO TODO TODO !!!!
+Fix the radians. They're wrong. They're all wrong.
 */
 
 #include <math.h>
