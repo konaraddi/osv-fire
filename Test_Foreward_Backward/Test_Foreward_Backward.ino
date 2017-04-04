@@ -21,20 +21,15 @@ void loop() {
 
   motor1->run(FORWARD);
   motor2->run(FORWARD);
-  motor3->run(BACKWARD);
-  motor4->run(BACKWARD);
+  motor3->run(FORWARD);
+  motor4->run(FORWARD);
 
   delay(5000);
 
   motor1->run(BACKWARD);
   motor2->run(BACKWARD);
-  motor3->run(FORWARD);
-  motor4->run(FORWARD);
+  motor3->run(BACKWARD);
+  motor4->run(BACKWARD);
 
   delay(5000);
 }
-
-
-
-
-
