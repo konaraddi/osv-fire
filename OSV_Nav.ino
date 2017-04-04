@@ -1,7 +1,3 @@
-/*TODO TODO TODO TODO !!!!
-Fix the radians. They're wrong. They're all wrong.
-*/
-
 #include <math.h>
 
 #include <enes100.h> //I doubt we need this, but it's here just to be safe. I'll test it if we need it.
@@ -204,6 +200,7 @@ void turnCounterClockWise(float radiansToTurn){
 //if direction is C, the Clockwise turning.
 //if direction is not C, then counterclockWise turning.
 void turn(int speed, float radiansToTurn, char direction, int duration){
+    //it knows it faced the right direction if the initial direction + radiansToTurn = desired direction.
     //need to conduct test to figure out how long it takes for the OSV to make a 360 pivot
     for(int i= 0; i < 4; i++){
         motor[i]= AFMS.getMotor(i + 1);
