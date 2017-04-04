@@ -22,22 +22,16 @@ SoftwareSerial mySerial(8, 9);//the ports to which the virtual RX and TX go in
 Marker marker(108); //look at QR code's back for number
 RF_Comm rf(&mySerial, &marker);
 
-//TODO replace the stuff below with results from tests
-//assume OSV takes 1 second to rotate its wheels once
-const float timeToRotateOnce= 1000;
-const float timeToPivot360= 1000;
-
-//circumference of our OSV's wheels (in meters)
-float circumferenceOfOSVWheel= 2;
-
 //OSV's CURRENT COORDINATES
 float currentX;
 float currentY;
 float currentTheta;
 
+//dictates the speed of the OSV's general movement
 const int typicalSpeed= 50; //0-255 (PWM)
+const int lengthOfEachBurst= 100; //in milliseconds
 
-//FOR EXIT THE WALL
+//FOR EXITING THE WALL
 //Area A (an area to which the OSV should go to before making an exit)
 const float Ax= 0.5;
 const float Ay= 0.325;
@@ -95,8 +89,7 @@ void updateCurrentLocation(){
 }
 
 /*
-The functions below use speed (PWM: 0-255) and duration. For now, the duration
-is time-based (milliseconds). It will be changed to rotations in the future.
+The functions below use speed (PWM: 0-255) and duration.
 The direction should be FORWARD or BACKWARD.
 
 TESTED thru Serial print
@@ -128,7 +121,7 @@ void moveStraight(int speed, int duration, char direction){
             motor[i]->run(FORWARD);
         }
     }else{
-        Serial.println("You need to use F or B, with quotes, for direction in moveStraight(~)");
+        rf.println("You need to use F or B, with quotes, for direction in moveStraight(~)");
     }
 
     delay(duration);
@@ -140,11 +133,8 @@ void moveStraight(int speed, int duration, char direction){
     }
 
     //the below is to check if it's working
-    Serial.println("moveStraight(~) executed");
-    Serial.println(speed);
-    Serial.println(duration);
-    Serial.println(direction);
-    Serial.print("ms");
+    rf.println("moveStraight(~) executed for");
+    rf.print(duration);
 
 }
 
@@ -154,6 +144,9 @@ NEEDS TO BE TESTED THOROUGHLY.
 void moveTowardsPoint(float desiredX, float desiredY){
 
     updateCurrentLocation();
+    float startingX= currentX;
+    float startingY= currentY;
+    float distanceItShouldTravel= sqrt( pow( abs(startingX - desiredX), 2) + pow( abs(startingY - desiredY), 2));
 
     float Ymovement= desiredY - currentY;
     float Xmovement= desiredX - currentX;
@@ -170,41 +163,51 @@ void moveTowardsPoint(float desiredX, float desiredY){
         turnCounterClockWise(theta);
     }
 
-    float distanceToMove= sqrt(pow(Ymovement,2) + pow(Xmovement, 2));
-    moveStraight(typicalSpeed, (distanceToMove / circumferenceOfOSVWheel) * timeToRotateOnce, 'F');
-
-    updateCurrentLocation();
-
     float permissibleErrorForX= 0.1;//the OSV's X coordinate must be within +/- this of the desired X
     float permissibleErrorForY= 0.1;//the OSV's Y coordinate must be within +/- this of the desired Y
-    float permissibleErrorForTheta= 0.1;//the OSV's Theta coordinate must be within +/- this of the desired theta
 
-    if(currentX > desiredX + permissibleErrorForX || currentX < desiredX - permissibleErrorForX ||
-        currentY > desiredY + permissibleErrorForY || currentY < desiredY - permissibleErrorForY ||
-        currentTheta < theta - permissibleErrorForTheta || currentTheta > theta + permissibleErrorForTheta){
-        //recursively called until OSV's orientation an position are correct
-        moveTowardsPoint(desiredX, desiredY);
-        //TODO
-        //Write code that prevents the OSV from being stuck in a repetitive motion where the OSV goes too over or too under
-        //This should be prevented in turnClockWise and turnCounterClockWise but have a safetynet here too.
+    typedef int arrivedAtDestination;
+    #define true 1
+    #define false 0
+    while(arrivedAtDestination == false){
+
+        moveStraight(typicalSpeed, lengthOfEachBurst, 'F');
+        updateCurrentLocation();
+        float distanceTraveled= sqrt( pow( abs(currentX - startingX), 2) + pow( abs(currentY - startingY), 2));
+
+        if(currentX < desiredX + permissibleErrorForX || currentX > desiredX - permissibleErrorForX ||
+            currentY < desiredY + permissibleErrorForY || currentY > desiredY - permissibleErrorForY){
+            arrivedAtDestination= true;
+        }
+
+        if(distanceTraveled < distanceItShouldTravel){
+
+        }
+
+        if(distanceTraveled > distanceItShouldTravel){
+
+        }
+
+
     }
+    updateCurrentLocation();
 
 }
 
 void turnClockWise(float radiansToTurn){
-    turn(radiansToTurn, 'C');
+    turn(typicalSpeed, radiansToTurn, 'C', lengthOfEachBurst);
 }
 void turnCounterClockWise(float radiansToTurn){
-    turn(radiansToTurn, 'W');
+    turn(typicalSpeed, radiansToTurn, 'W', lengthOfEachBurst);
 }
 
 //if direction is C, the Clockwise turning.
 //if direction is not C, then counterclockWise turning.
-void turn(float radiansToTurn, char direction){
+void turn(int speed, float radiansToTurn, char direction, int duration){
     //need to conduct test to figure out how long it takes for the OSV to make a 360 pivot
     for(int i= 0; i < 4; i++){
         motor[i]= AFMS.getMotor(i + 1);
-        motor[i]->setSpeed(typicalSpeed);
+        motor[i]->setSpeed(speed);
     }
     //intentionally kept ouside of previous loop so the motors are set before they run
     for(int i= 0; i < 4; i++){
@@ -222,7 +225,7 @@ void turn(float radiansToTurn, char direction){
             }
         }
     }
-    //the predicted time it would take to face
+
     //TODO write code to check if it actually faced that direction and recursively call something to fix it
-    delay((radiansToTurn / PI ) * timeToPivot360);
+    delay(duration);
 }
