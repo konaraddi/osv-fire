@@ -9,6 +9,9 @@ libraries before uploading:
 3. Wire (check Sketch>Include Library>Recommended Libraries w/in
     the Arduino IDE)
 
+##To-Do:
+Finished implementing short-burst approach in moveTowardsPoint().
+
 ## FAQs
 
 #### 1. Why hasn't Omkar made any recent commits?
