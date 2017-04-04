@@ -21,10 +21,10 @@ libraries before uploading to OSV:
 * Wrote code for various calculations (e.g. should the OSV turn CW or CCW?)
     * More to come
 
-#### Currently Doing....
+#### What's happening now
 * Sean will write code for M5 by Thursday 04/06/2017
-* Finish implementing short bursts for movement and turing by Thursday 04/06/2017
-* Finish writing code for exiting the wall (w/out distance sensor for now) by Thursday 04/06/2017
+* I'll finish implementing short bursts for movement and turning by Thursday 04/06/2017
+* I'll finish writing code for exiting the wall (w/out distance sensor for now) by Thursday 04/06/2017
 
 #### Upcoming
 1. Optimize movement and turning.
