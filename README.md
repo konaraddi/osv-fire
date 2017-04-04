@@ -1,6 +1,6 @@
 ## OSV Navigation Code
 ##### &copy; 2017 Omkar Konaraddi. All rights reserved.  
-</br>
+<br></br>
 The `OSV_Nav.ino` contains the code for the OSV. Add the following necessary
 libraries before uploading:
 1. enes100 (can be found on the [ELMS](https://myelms.umd.edu/courses/1223708/files/folder/Arduino%20Files))
@@ -9,7 +9,7 @@ libraries before uploading:
 3. Wire (check Sketch>Include Library>Recommended Libraries w/in
     the Arduino IDE)
 
-##To-Do:
+## To-Do:
 Write code for Milestone 5.
 Finished implementing short-burst approach in moveTowardsPoint().
 
