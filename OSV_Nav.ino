@@ -35,7 +35,6 @@ const float EXIT_Ay= 0.325;
 const float EXIT_Bx= 0.1;
 const float EXIT_By= 1.675;
 
-
 void setup(){
     Serial.begin(9600);
     rf.transmitData(START_MISSION, NO_DATA);
@@ -76,6 +75,7 @@ void moveTowardsPoint(float desiredX, float desiredY){
     float distanceTraveled;//the actual distance the OSV travels
 
     rf.updateLocation();
+    reportLocation();
     float startingX= marker.x;
     float startingY= marker.y;
     distanceItShouldTravel= sqrt( pow( abs(startingX - desiredX), 2) + pow( abs(startingY - desiredY), 2));
@@ -113,18 +113,19 @@ void moveTowardsPoint(float desiredX, float desiredY){
             N++;
         }else{
             //OSV reached destination
-            rf.updateLocation();
             arrivedAtDestination= true;
+            rf.updateLocation();
+            reportLocation();
         }
     }
 
-    rf.updateLocation();
 }
 
 
 void face(float directionToFace){
 
     rf.updateLocation();
+    reportLocation();
 
     for(int i= 0; i < 4; i++){
         motor[i]->setSpeed(typicalSpeed);
@@ -160,6 +161,7 @@ void face(float directionToFace){
     if(marker.theta < 0){ positiveCurrentTheta+= 2 * PI; }
 
     rf.updateLocation();
+    reportLocation();
 
     //check if OSV's current theta is within +/- permissibleErrorForTheta of the desired theta
     if(positiveCurrentTheta > positiveDesiredTheta + permissibleErrorForTheta ||
@@ -168,10 +170,12 @@ void face(float directionToFace){
     }
 
     rf.updateLocation();
+    reportLocation();
 
 }
 
 //Turn COUNTERCLOCKWISE or CLOCKWISE? That's the decision being made below.
+//returns CLOCKWISE or COUNTERCLOCKWISE
 int rotate_CCW_or_CW(float directionToFace){
 
     //convert to 0 -> 2pi system for calculations
@@ -212,4 +216,16 @@ void moveStraight(int speed, int duration, int movement){
     rf.println("moveStraight(~) executed for");
     rf.print(duration);
 
+}
+
+void reportLocation(){
+    rf.println("OSV is @ ");
+    rf.print("(");
+    rf.print(marker.x);
+    rf.print(", ");
+    rf.print(marker.y);
+    rf.print(")");
+    rf.println("It's facing ");
+    rf.print(marker.theta);
+    rf.print(" radians.");
 }
