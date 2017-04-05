@@ -45,18 +45,17 @@ void setup(){
     rf.updateLocation();
 
     AFMS.begin();
+    //motor[0] and motor [1] are motors on the left (top view of OSV with front facing North)
     motor[0]=AFMS.getMotor(1);
     motor[1]=AFMS.getMotor(2);
+    //motor[2] and motor [3] are motors on the right (top view of OSV with front facing North)
     motor[2]=AFMS.getMotor(3);
     motor[3]=AFMS.getMotor(4);
-    //motor[0] and motor [1] are motors on the left (top view of OSV with front facing North)
-    //motor[2] and motor [3] are motors on the right (top view of OSV with front facing North)
-
 }
 
 void loop(){
     //TODO Optimize exiting the wall after the basics work (i.e. implement Travel Time algorithm)
-    //EXIT THE WALL THROUGH POINT A (FOR NOW, WILL OPTIMIZE LATER)
+    //EXIT THE WALL THROUGH POINT A (for now, will incorporate distance sensor later)
     moveTowardsPoint(Ax, Ay);
     moveTowardsPoint(EXIT_Ax, EXIT_Ay);
 
@@ -73,78 +72,59 @@ void loop(){
     while(1);
 }
 
-/*
-The functions below use speed (PWM: 0-255) and duration.
-The direction should be FORWARD or BACKWARD.
 
-TESTED thru Serial print
-*/
-void moveStraight(int speed, int duration, int movement){
-
-    for(int i= 0; i < 4; i++){
-        motor[i]->setSpeed(speed);
-    }
-
-    for(int i= 0; i < 4; i++){
-        motor[i]->run(movement);
-    }
-
-    delay(duration);
-
-    for(int i= 0; i < 4; i++){
-        motor[i]->run(RELEASE);
-    }
-
-    //the below is to check if it's working
-    rf.println("moveStraight(~) executed for");
-    rf.print(duration);
-
-}
-
-/*
-NEEDS TO BE TESTED THOROUGHLY.
-*/
 void moveTowardsPoint(float desiredX, float desiredY){
-    float distanceItShouldTravel;
-    float distanceTraveled;
+    float distanceItShouldTravel;//the distance we expect the OSV to travel
+    float distanceTraveled;//the actual distance the OSV travels
 
     rf.updateLocation();
     float startingX= marker.x;
     float startingY= marker.y;
     distanceItShouldTravel= sqrt( pow( abs(startingX - desiredX), 2) + pow( abs(startingY - desiredY), 2));
 
-    float Ydisplacement= desiredY - marker.y;
-    float Xdisplacement= desiredX - marker.x;
+    float changeInY= desiredY - marker.y;
+    float changeInX= desiredX - marker.x;
 
     //the direction the OSV needs to face
     //returns a range of -pi to +pi
-    float directionToFace= atan2(Ydisplacement, Xdisplacement);
+    float directionToFace= atan2(changeInY, changeInX);
 
-    turnTowards(directionToFace);
+    face(directionToFace);
 
-    //TODO use recursion for the below
+    /*
+    The below is where the OSV will incremently move until it reaches it's destination.
+
+    The "N" is used, in the unlikely scenario, that the OSV is stuck in an infinite loop
+    of going back and forth. In such a case, the OSV reduces it's backward motion by a factor
+    of "N", where N starts at 1 and is incremented every time the OSV moves backward and
+    does not travel within +/ permissibleErrorForXY of distanceItShouldTravel;.
+    */
+    int N= 1;
     boolean arrivedAtDestination = false;
     while(arrivedAtDestination == false){
 
-        moveStraight(typicalSpeed, lengthOfEachBurst, FORWARD);
-        rf.updateLocation();
         distanceTraveled= sqrt( pow( abs(marker.x - startingX), 2) + pow( abs(marker.y - startingY), 2));
 
         if(distanceTraveled < distanceItShouldTravel - permissibleErrorForXY){
-
+            //OSV has yet to reach destination
+            moveStraight(typicalSpeed, lengthOfEachBurst, FORWARD);
         }
-
-        if(distanceTraveled > distanceItShouldTravel + permissibleErrorForXY){
-
+        else if(distanceTraveled > distanceItShouldTravel + permissibleErrorForXY){
+            //OSV has gone past it's destination
+            moveStraight(typicalSpeed, (int) lengthOfEachBurst / N, BACKWARD);
+            N++;
+        }else{
+            //OSV reached destination
+            rf.updateLocation();
+            arrivedAtDestination= true;
         }
-
     }
 
     rf.updateLocation();
 }
 
 
-void turnTowards(float directionToFace){
+void face(float directionToFace){
 
     rf.updateLocation();
 
@@ -165,7 +145,7 @@ void turnTowards(float directionToFace){
         motor[2]->run(FORWARD);
         motor[3]->run(FORWARD);
     }else{
-        rf.println("failure @ turnTowards() execution");
+        rf.println("failure @ turnTowards() execution, unable to decided CCW or CW turning");
     }
 
     delay(lengthOfEachBurst);
@@ -186,7 +166,7 @@ void turnTowards(float directionToFace){
     //check if OSV's current theta is within +/- permissibleErrorForTheta of the desired theta
     if(positiveCurrentTheta > positiveDesiredTheta + permissibleErrorForTheta ||
         positiveCurrentTheta < positiveDesiredTheta - permissibleErrorForTheta){
-        turnTowards(directionToFace);//TODO optimize this w/ 2nd overloaded method
+        face(directionToFace);//TODO optimize this w/ 2nd overloaded method
     }
 
     rf.updateLocation();
@@ -202,12 +182,36 @@ int rotate_CCW_or_CW(float directionToFace){
     if(directionToFace < 0){ positiveDesiredTheta+= 2 * PI; }
     if(marker.theta < 0){ positiveCurrentTheta+= 2 * PI; }
 
-
     if(marker.theta < positiveDesiredTheta){
         if(abs(marker.theta - directionToFace) < PI){
+            rf.println("OSV will turn COUNTERCLOCKWISE")
             return COUNTERCLOCKWISE;
         }
     }
 
+    rf.println("OSV will turn CLOCKWISE");
     return CLOCKWISE;
+}
+
+
+void moveStraight(int speed, int duration, int movement){
+
+    for(int i= 0; i < 4; i++){
+        motor[i]->setSpeed(speed);
+    }
+
+    for(int i= 0; i < 4; i++){
+        motor[i]->run(movement);
+    }
+
+    delay(duration);
+
+    for(int i= 0; i < 4; i++){
+        motor[i]->run(RELEASE);
+    }
+
+    //the below is to check if it's working
+    rf.println("moveStraight(~) executed for");
+    rf.print(duration);
+
 }

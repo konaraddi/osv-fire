@@ -10,10 +10,10 @@ libraries before uploading to OSV:
     the Arduino IDE)
 
 ## Bulletin Board
-###### *Last Updated: 04/04/2017*
+###### *Last Updated: 04/05/2017*
 
 #### What we have so far
-* We know how to use RF communication
+* We know how to use RF communication (the updated library is nbd)
 * We know how to use the Adafruit_MotorShield library
     * i.e. We can control the motors
 * Wrote code for updating OSV's current location and communication
