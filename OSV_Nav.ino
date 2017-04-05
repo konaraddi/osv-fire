@@ -1,7 +1,5 @@
 #include <math.h>
 #include "enes100.h"
-#include <SoftwareSerial.h>
-#include <Arduino.h>
 #include <Wire.h>
 #include <Adafruit_MotorShield.h>
 #include "utility/Adafruit_MS_PWMServoDriver.h"
@@ -15,7 +13,7 @@ float permissibleErrorForXY= 0.075; //Coordinate Transmissions are accurate to +
 Adafruit_MotorShield AFMS = Adafruit_MotorShield();
 Adafruit_DCMotor *motor[4];
 
-SoftwareSerial mySerial(8, 9);//the ports to which the virtual RX and TX go in
+SoftwareSerial mySerial(8, 9);//the ports to which the virtual RX and TX go in (the TX requires PWM)
 Marker marker(108); //look at QR code's back for number
 RF_Comm rf(&mySerial, &marker);
 
