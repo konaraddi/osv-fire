@@ -6,6 +6,12 @@
 #include <Adafruit_MotorShield.h>
 #include "utility/Adafruit_MS_PWMServoDriver.h"
 
+#define CLOCKWISE 0
+#define COUNTERCLOCKWISE 1
+
+float permissibleErrorForTheta= 0.075;//Coordinate Transmissions are accurate to +/- 0.050 radians
+float permissibleErrorForXY= 0.075; //Coordinate Transmissions are accurate upto 0.050 meters
+
 Adafruit_MotorShield AFMS = Adafruit_MotorShield();
 Adafruit_DCMotor *motor[4];
 
@@ -73,7 +79,7 @@ The direction should be FORWARD or BACKWARD.
 
 TESTED thru Serial print
 */
-void moveStraight(int speed, int duration, char movement){
+void moveStraight(int speed, int duration, int movement){
 
     for(int i= 0; i < 4; i++){
         motor[i]->setSpeed(speed);
@@ -99,84 +105,109 @@ void moveStraight(int speed, int duration, char movement){
 NEEDS TO BE TESTED THOROUGHLY.
 */
 void moveTowardsPoint(float desiredX, float desiredY){
+    float distanceItShouldTravel;
+    float distanceTraveled;
 
     rf.updateLocation();
     float startingX= marker.x;
     float startingY= marker.y;
-    float distanceItShouldTravel= sqrt( pow( abs(startingX - desiredX), 2) + pow( abs(startingY - desiredY), 2));
+    distanceItShouldTravel= sqrt( pow( abs(startingX - desiredX), 2) + pow( abs(startingY - desiredY), 2));
 
-    float Ymovement= desiredY - marker.y;
-    float Xmovement= desiredX - marker.x;
+    float Ydisplacement= desiredY - marker.y;
+    float Xdisplacement= desiredX - marker.x;
 
     //the direction the OSV needs to face
     //returns a range of -pi to +pi
-    float theta= atan2(Ymovement, Xmovement);
+    float directionToFace= atan2(Ydisplacement, Xdisplacement);
 
-    if(theta < 0){
-        //OSV will turn clockwise
-        turnClockWise(theta);
-    }else{
-        //OSV will turn counterclockwise
-        turnCounterClockWise(theta);
-    }
+    turnTowards(directionToFace);
 
-    float permissibleErrorForX= 0.1;//the OSV's X coordinate must be within +/- this of the desired X
-    float permissibleErrorForY= 0.1;//the OSV's Y coordinate must be within +/- this of the desired Y
-
-    boolean arrivedAtDestination;
+    //TODO use recursion for the below
+    boolean arrivedAtDestination = false;
     while(arrivedAtDestination == false){
 
-        moveStraight(typicalSpeed, lengthOfEachBurst, 'FORWARD');
+        moveStraight(typicalSpeed, lengthOfEachBurst, FORWARD);
         rf.updateLocation();
-        float distanceTraveled= sqrt( pow( abs(marker.x - startingX), 2) + pow( abs(marker.y - startingY), 2));
+        distanceTraveled= sqrt( pow( abs(marker.x - startingX), 2) + pow( abs(marker.y - startingY), 2));
 
-        if(marker.x < desiredX + permissibleErrorForX || marker.x > desiredX - permissibleErrorForX ||
-            marker.y < desiredY + permissibleErrorForY || marker.y > desiredY - permissibleErrorForY){
-            arrivedAtDestination= true;
-        }
-
-        if(distanceTraveled < distanceItShouldTravel){
+        if(distanceTraveled < distanceItShouldTravel - permissibleErrorForXY){
 
         }
 
-        if(distanceTraveled > distanceItShouldTravel){
+        if(distanceTraveled > distanceItShouldTravel + permissibleErrorForXY){
 
         }
 
     }
+
     rf.updateLocation();
 }
 
-void turnClockWise(float radiansToTurn){
-    turn(typicalSpeed, radiansToTurn, 'clockwise', lengthOfEachBurst);
-}
-void turnCounterClockWise(float radiansToTurn){
-    turn(typicalSpeed, radiansToTurn, 'counterclockwise', lengthOfEachBurst);
-}
 
-//if direction is C, the Clockwise turning.
-//if direction is not C, then counterclockWise turning.
-void turn(int speed, float radiansToTurn, char direction, int duration){
-    //it knows it faced the right direction if the initial direction + radiansToTurn = desired direction.
-    //need to conduct test to figure out how long it takes for the OSV to make a 360 pivot
+void turnTowards(float directionToFace){
+
+    rf.updateLocation();
+
     for(int i= 0; i < 4; i++){
-        motor[i]->setSpeed(speed);
+        motor[i]->setSpeed(typicalSpeed);
     }
-    //intentionally kept ouside of previous loop so the motors are set before they run
-    if(direction == 'clockwise'){
+
+    int rotate= rotate_CCW_or_CW(directionToFace);
+
+    if(rotate == CLOCKWISE){
         motor[0]->run(FORWARD);
         motor[1]->run(FORWARD);
         motor[2]->run(BACKWARD);
         motor[3]->run(BACKWARD);
-    }else if(direction == 'counterclockwise'){
+    }else if(rotate ==  COUNTERCLOCKWISE){
         motor[0]->run(BACKWARD);
         motor[1]->run(BACKWARD);
         motor[2]->run(FORWARD);
         motor[3]->run(FORWARD);
     }else{
-        rf.println("used turn() incorrectly, check spelling of clockwise or counterclockwise");
+        rf.println("failure @ turnTowards() execution");
     }
 
-    //TODO write code to check if it actually faced that direction and recursively call something to fix it
-    delay(duration);
+    delay(lengthOfEachBurst);
+
+    //stop all motors
+    for(int i= 0; i < 4; i++){
+        motor[i]->run(RELEASE);
+    }
+
+    //convert to 0 -> 2pi system for calculations (Coordinate Transmissions uses -pi -> +pi system)
+    int positiveDesiredTheta= directionToFace;
+    int positiveCurrentTheta= marker.theta;
+    if(directionToFace < 0){ positiveDesiredTheta+= 2 * PI; }
+    if(marker.theta < 0){ positiveCurrentTheta+= 2 * PI; }
+
+    rf.updateLocation();
+
+    //check if OSV's current theta is within +/- permissibleErrorForTheta of the desired theta
+    if(positiveCurrentTheta > positiveDesiredTheta + permissibleErrorForTheta ||
+        positiveCurrentTheta < positiveDesiredTheta - permissibleErrorForTheta){
+        turnTowards(directionToFace);//TODO optimize this w/ 2nd overloaded method
+    }
+
+    rf.updateLocation();
+
+}
+
+//Turn COUNTERCLOCKWISE or CLOCKWISE? That's the decision being made below.
+int rotate_CCW_or_CW(float directionToFace){
+
+    //convert to 0 -> 2pi system for calculations
+    int positiveDesiredTheta= directionToFace;
+    int positiveCurrentTheta= marker.theta;
+    if(directionToFace < 0){ positiveDesiredTheta+= 2 * PI; }
+    if(marker.theta < 0){ positiveCurrentTheta+= 2 * PI; }
+
+
+    if(marker.theta < positiveDesiredTheta){
+        if(abs(marker.theta - directionToFace) < PI){
+            return COUNTERCLOCKWISE;
+        }
+    }
+
+    return CLOCKWISE;
 }
