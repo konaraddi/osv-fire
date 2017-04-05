@@ -10,7 +10,7 @@
 #define COUNTERCLOCKWISE 1
 
 float permissibleErrorForTheta= 0.075;//Coordinate Transmissions are accurate to +/- 0.050 radians
-float permissibleErrorForXY= 0.075; //Coordinate Transmissions are accurate upto 0.050 meters
+float permissibleErrorForXY= 0.075; //Coordinate Transmissions are accurate to +/- 0.050 meters
 
 Adafruit_MotorShield AFMS = Adafruit_MotorShield();
 Adafruit_DCMotor *motor[4];
@@ -184,7 +184,7 @@ int rotate_CCW_or_CW(float directionToFace){
 
     if(marker.theta < positiveDesiredTheta){
         if(abs(marker.theta - directionToFace) < PI){
-            rf.println("OSV will turn COUNTERCLOCKWISE")
+            rf.println("OSV will turn COUNTERCLOCKWISE");
             return COUNTERCLOCKWISE;
         }
     }
