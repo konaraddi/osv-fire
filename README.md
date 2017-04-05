@@ -23,12 +23,11 @@ libraries before uploading to OSV:
 
 #### What's happening now
 * Sean will write code for M5 by Thursday 04/06/2017
-* I'll finish implementing short bursts for movement and turning by Thursday 04/06/2017
-* I'll finish writing code for exiting the wall (w/out distance sensor for now) by Thursday 04/06/2017
+* ~~I'll finish implementing short bursts for movement and turning by Thursday 04/06/2017~~ [COMPLETED]
+* ~~I'll finish writing code for exiting the wall (w/out distance sensor for now) by Thursday 04/06/2017~~ [COMPLETED]
 
 #### Upcoming
-1. Optimize movement and turning.
-    * OSV will move continuously for 75% of the distance it expects to travel before moving in short bursts and checking coordinates intermittently. This is in contrast to always moving and turning in short bursts (the current approach).
+1. Learn to use distance sensor & implement it
 2. Write Travel Time algorithm
     * Will require testing to figure out how long it takes the OSV to move and turn
 
