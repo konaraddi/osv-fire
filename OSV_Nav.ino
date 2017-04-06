@@ -101,7 +101,7 @@ void moveTowardsPoint(float desiredX, float desiredY){
     int N= 1;
     bool arrivedAtDestination = false;
 
-    while(!arrivedAtDestination && abs(distanceTraveled - distanceItShouldTravel) > 0.5){
+    while(abs(distanceTraveled - distanceItShouldTravel) > 0.5){
         move(TURBO_BOOST, FORWARD);
         rf.updateLocation();
         distanceTraveled= sqrt( pow( abs(marker.x - startingX), 2) + pow( abs(marker.y - startingY), 2));
