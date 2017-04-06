@@ -29,10 +29,10 @@ const float Ay= 0.325;
 const float Bx= 0.5;
 const float By= 1.675;
 //Point of EXIT from area A
-const float EXIT_Ax= 0.1;
+const float EXIT_Ax= 1.0;
 const float EXIT_Ay= 0.325;
 //Point of EXIT from area B
-const float EXIT_Bx= 0.1;
+const float EXIT_Bx= 1.0;
 const float EXIT_By= 1.675;
 
 void setup(){
