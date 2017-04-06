@@ -18,22 +18,23 @@ Marker marker(108); //look at QR code's back for number
 RF_Comm rf(&mySerial, &marker);
 
 //dictates the speed of the OSV's general movement
-const int typicalSpeed= 50; //0-255 (PWM)
-const int lengthOfEachBurst= 100; //in milliseconds
+#define TURBO_BOOST 255 //Just for kicks
+#define AVG_SPEED 75 //0-255 PWM
+#define DURATION_OF_BURST 100 //in milliseconds
 
 //FOR EXITING THE WALL
 //Area A (an area to which the OSV should go to before making an exit)
-const float Ax= 0.5;
-const float Ay= 0.325;
+#define Ax 0.5
+#define Ay 0.325
 //Area B (an area to which the OSV should go to before making an exit)
-const float Bx= 0.5;
-const float By= 1.675;
+#define Bx 0.5
+#define By 1.675
 //Point of EXIT from area A
-const float EXIT_Ax= 1.0;
-const float EXIT_Ay= 0.325;
+#define EXIT_Ax 1.0
+#define EXIT_Ay 0.325
 //Point of EXIT from area B
-const float EXIT_Bx= 1.0;
-const float EXIT_By= 1.675;
+#define EXIT_Bx 1.0
+#define EXIT_By 1.675
 
 void setup(){
     Serial.begin(9600);
@@ -98,20 +99,34 @@ void moveTowardsPoint(float desiredX, float desiredY){
     does not travel within +/ permissibleErrorForXY of distanceItShouldTravel;.
     */
     int N= 1;
-    boolean arrivedAtDestination = false;
-    while(arrivedAtDestination == false){
+    bool arrivedAtDestination = false;
+
+    while(!arrivedAtDestination && abs(distanceTraveled - distanceItShouldTravel) > 0.5){
+        move(TURBO_BOOST, FORWARD);
+    }
+    stop();
+
+    while(!arrivedAtDestination){
 
         distanceTraveled= sqrt( pow( abs(marker.x - startingX), 2) + pow( abs(marker.y - startingY), 2));
 
-        if(distanceTraveled < distanceItShouldTravel - permissibleErrorForXY){
+        if(distanceTraveled < distanceItShouldTravel - permissibleErrorForXY)
+        {
             //OSV has yet to reach destination
-            moveStraight(typicalSpeed, lengthOfEachBurst, FORWARD);
+            move(AVG_SPEED, FORWARD);
+            delay(DURATION_OF_BURST);
+            stop();
         }
-        else if(distanceTraveled > distanceItShouldTravel + permissibleErrorForXY){
+        else if(distanceTraveled > distanceItShouldTravel + permissibleErrorForXY)
+        {
             //OSV has gone past it's destination
-            moveStraight(typicalSpeed, (int) lengthOfEachBurst / N, BACKWARD);
+            move(AVG_SPEED, BACKWARD);
+            delay((int) DURATION_OF_BURST / N);
+            stop();
             N++;
-        }else{
+        }
+        else
+        {
             //OSV reached destination
             arrivedAtDestination= true;
             rf.updateLocation();
@@ -128,7 +143,7 @@ void face(float directionToFace){
     reportLocation();
 
     for(int i= 0; i < 4; i++){
-        motor[i]->setSpeed(typicalSpeed);
+        motor[i]->setSpeed(AVG_SPEED);
     }
 
     int rotate= rotate_CCW_or_CW(directionToFace);
@@ -143,11 +158,9 @@ void face(float directionToFace){
         motor[1]->run(BACKWARD);
         motor[2]->run(FORWARD);
         motor[3]->run(FORWARD);
-    }else{
-        rf.println("failure @ turnTowards() execution, unable to decided CCW or CW turning");
     }
 
-    delay(lengthOfEachBurst);
+    delay(DURATION_OF_BURST);
 
     //stop all motors
     for(int i= 0; i < 4; i++){
@@ -196,7 +209,7 @@ int rotate_CCW_or_CW(float directionToFace){
 }
 
 
-void moveStraight(int speed, int duration, int movement){
+void move(int speed, int movement){
 
     for(int i= 0; i < 4; i++){
         motor[i]->setSpeed(speed);
@@ -206,16 +219,16 @@ void moveStraight(int speed, int duration, int movement){
         motor[i]->run(movement);
     }
 
-    delay(duration);
+    rf.println("OSV has started to move @ ");
+    rf.print(speed);
+    rf.print(" (0-255 PWM)");
+}
 
+void stop(){
     for(int i= 0; i < 4; i++){
         motor[i]->run(RELEASE);
     }
-
-    //the below is to check if it's working
-    rf.println("moveStraight(~) executed for");
-    rf.print(duration);
-
+    rf.println("OSV has stopped moving.");
 }
 
 void reportLocation(){
