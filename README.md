@@ -22,7 +22,7 @@ libraries before uploading to OSV:
     * More to come
 
 #### What's happening now
-* Sean will write code for M5 by Thursday 04/06/2017
+* ~~Sean will write code for M5 by Thursday 04/06/2017~~ [COMPLETED]
 * ~~I'll finish implementing short bursts for movement and turning by Thursday 04/06/2017~~ [COMPLETED]
 * ~~I'll finish writing code for exiting the wall (w/out distance sensor for now) by Thursday 04/06/2017~~ [COMPLETED]
 
