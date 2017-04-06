@@ -4,18 +4,18 @@
 #include <Adafruit_MotorShield.h>
 #include "utility/Adafruit_MS_PWMServoDriver.h"
 
+SoftwareSerial mySerial(8, 9);//the ports to which the virtual RX and TX go in (the TX requires PWM)
+Marker marker(108); //look at QR code's back for number
+RF_Comm rf(&mySerial, &marker);
+
+Adafruit_MotorShield AFMS = Adafruit_MotorShield();
+Adafruit_DCMotor *motor[4];
+
 #define CLOCKWISE 0
 #define COUNTERCLOCKWISE 1
 
 float permissibleErrorForTheta= 0.075;//Coordinate Transmissions are accurate to +/- 0.050 radians
 float permissibleErrorForXY= 0.075; //Coordinate Transmissions are accurate to +/- 0.050 meters
-
-Adafruit_MotorShield AFMS = Adafruit_MotorShield();
-Adafruit_DCMotor *motor[4];
-
-SoftwareSerial mySerial(8, 9);//the ports to which the virtual RX and TX go in (the TX requires PWM)
-Marker marker(108); //look at QR code's back for number
-RF_Comm rf(&mySerial, &marker);
 
 //dictates the speed of the OSV's general movement
 #define TURBO_BOOST 255 //Just for kicks
@@ -54,9 +54,12 @@ void setup(){
 void loop(){
     //TODO Optimize exiting the wall after the basics work (i.e. implement Travel Time algorithm)
     //EXIT THE WALL THROUGH POINT A (for now, will incorporate distance sensor later)
-    moveTowardsPoint(Ax, Ay);
-    moveTowardsPoint(EXIT_Ax, EXIT_Ay);
+    //moveTowardsPoint(Ax, Ay);
+    //moveTowardsPoint(EXIT_Ax, EXIT_Ay);
 
+    face(0);
+    face(PI / 2);
+    face(3.1);
     //TRAVEL TOWARDS FIRE SITE
 
     //FIRE SITE ROUND 1
@@ -243,4 +246,9 @@ void reportLocation(){
     rf.println("It's facing ");
     rf.print(marker.theta);
     rf.print(" radians.");
+}
+
+///TRAVEL TIME ALGORITHM
+int expectedArrivalTime(float x, float y){
+
 }

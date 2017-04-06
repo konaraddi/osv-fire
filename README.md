@@ -10,7 +10,7 @@ libraries before uploading to OSV:
     the Arduino IDE)
 
 ## Bulletin Board
-###### *Last Updated: 04/05/2017*
+###### *Last Updated: 04/06/2017*
 
 #### What we have so far
 * We know how to use RF communication (the updated library is nbd)
@@ -21,11 +21,9 @@ libraries before uploading to OSV:
 * Wrote code for various calculations (e.g. should the OSV turn CW or CCW?)
     * More to come
 * Wrote code for OSV moving from any point to any point
-
+    * To be tested on Fri 04/07
 #### What's happening now
-* ~~Sean will write code for M5 by Thursday 04/06/2017~~ [COMPLETED]
-* ~~I'll finish implementing short bursts for movement and turning by Thursday 04/06/2017~~ [COMPLETED]
-* ~~I'll finish writing code for exiting the wall (w/out distance sensor for now) by Thursday 04/06/2017~~ [COMPLETED]
+* Test code for having OSV move from any point to any point on Fri 04/07
 
 #### Upcoming
 1. Learn to use distance sensor & implement it
