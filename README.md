@@ -16,12 +16,13 @@ libraries before uploading to OSV:
 * OSV can move and turn
 * OSV can communicate with command
 * The OSV can turn towards any specified direction, regardless of its initial direction [Fri 04/07/2017]
+* Code for OSV move from any to any point
+    * didn't work on first test, will be fixed
 
 #### What's happening now
 * Clean up code
-* Have the OSV move from any point to any point
-    * code for this needs to be fixed and tested
-
+* Fix code for the OSV to move from any point to any point
+    
 #### Upcoming
 1. Learn to use distance sensor & implement it
 2. Write Travel Time algorithm
