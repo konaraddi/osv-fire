@@ -37,7 +37,6 @@ float permissibleErrorForXY= 0.075; //Coordinate Transmissions are accurate to +
 #define EXIT_By 1.675
 
 void setup(){
-    Serial.begin(9600);
     rf.transmitData(START_MISSION, NO_DATA);
     rf.transmitData(NAV, FIRE);
     rf.updateLocation();
