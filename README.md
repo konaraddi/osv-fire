@@ -10,12 +10,12 @@ libraries before uploading to OSV:
     the Arduino IDE)
 
 ## Bulletin Board
-###### *Last Updated: 04/06/2017*
+###### *Last Updated: Fri 04/07/2017*
 
 #### What we have so far
-* OSV can move
+* OSV can move and turn
 * OSV can communicate with command
-* The OSV can turn towards any specified direction, regardless of its initial direction [04/07/2017]
+* The OSV can turn towards any specified direction, regardless of its initial direction [Fri 04/07/2017]
 
 #### What's happening now
 * Clean up code
