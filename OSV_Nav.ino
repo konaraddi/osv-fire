@@ -4,7 +4,7 @@
 #include <Adafruit_MotorShield.h>
 #include "utility/Adafruit_MS_PWMServoDriver.h"
 
-SoftwareSerial mySerial(2, 3);//the ports to which the virtual RX and TX go in (the TX requires PWM)
+SoftwareSerial mySerial(2, 3);
 Marker marker(10); //look at QR code's back for number
 RF_Comm rf(&mySerial, &marker);
 
@@ -181,7 +181,7 @@ void face(float directionToFace){
         }
 
         rf.updateLocation();
-        
+
         positiveCurrentTheta= marker.theta;
         if(marker.theta < 0){
             positiveCurrentTheta+= 2 * PI;
