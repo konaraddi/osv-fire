@@ -4,7 +4,7 @@
 #include <Adafruit_MotorShield.h>
 #include "utility/Adafruit_MS_PWMServoDriver.h"
 
-SoftwareSerial mySerial(2, 3);
+SoftwareSerial mySerial(0, 1);
 Marker marker(10); //look at QR code's back for number
 RF_Comm rf(&mySerial, &marker);
 
