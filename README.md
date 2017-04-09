@@ -10,7 +10,7 @@ libraries before uploading to OSV:
     the Arduino IDE)
 
 ## Bulletin Board
-###### *Last Updated: Fri 04/07/2017*
+###### *Last Updated: Sun 04/09/2017*
 
 #### What we have so far
 * OSV can move and turn
@@ -20,10 +20,14 @@ libraries before uploading to OSV:
     * didn't work on first test, will be fixed
 
 #### What's happening now
-* Clean up code
-* Fix code for the OSV to move from any point to any point
-    
+* Learn to use distance sensor
+
 #### Upcoming
-1. Learn to use distance sensor & implement it
+1. Implement distance sensor into navigation (so the OSV can see if it's in front of the wall)
 2. Write Travel Time algorithm
     * Will require testing to figure out how long it takes the OSV to move and turn
+3. Rewrite code for turning and moving so it's smooth
+    * Right now we use short bursts in linear movement and turning. In between these bursts,
+    we check the OSV's coordinates so the OSV can decide whether or not to keep moving forward.
+    However, this is slow and is for testing purposes. So later I'll be writing code such that
+    the OSV only uses bursts when it's coming close to desired position/orientation.
