@@ -8,6 +8,8 @@ libraries before uploading to OSV:
     the Arduino IDE)
 3. Wire (check Sketch>Include Library>Recommended Libraries w/in
     the Arduino IDE)
+4. [NewPing](https://bitbucket.org/teckel12/arduino-new-ping/downloads/)
+    * For the ultrasonic range sensor
 
 ## Bulletin Board
 ###### *Last Updated: Sun 04/09/2017*
