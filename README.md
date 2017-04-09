@@ -22,7 +22,8 @@ libraries before uploading to OSV:
 
 #### What's happening now
 * ~~Learn to use distance sensor~~ [LEARNED]
-* The ultrasonic range sensor's readings needs to be calibrated
+* ~~The ultrasonic range sensor's readings needs to be calibrated~~
+    * The ultrasonic range sensor is accurate from 0 - 20 cm. Larger distances will be tested on 04/11/2017
 
 #### Upcoming
 1. Calibrate & implement distance sensor into navigation (so the OSV can see if it's in front of the wall)
