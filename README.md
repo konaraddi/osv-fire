@@ -21,7 +21,7 @@ libraries before uploading to OSV:
 * We know how to use the ultrasonic range sensor
 
 #### What's happening now
-* ~~Learn to use distance sensor~~ [Sun 04/09/2017]
+* ~~Learn to use distance sensor~~ [LEARNED]
 * The ultrasonic range sensor's readings needs to be calibrated
 
 #### Upcoming
