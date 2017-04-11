@@ -55,9 +55,9 @@ void setup(){
 
 void loop(){
 
-
-
-
+    //TODO didn't stop at Ax, Ay, it went thru ti
+    moveTowardsPoint(Ax, Ay);
+    while(1);
 
     //TODO Optimize exiting the wall after the basics work (i.e. implement Travel Time algorithm)
 
