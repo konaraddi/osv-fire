@@ -12,23 +12,22 @@ libraries before uploading to OSV:
     * For the ultrasonic range sensor
 
 ## Bulletin Board
-###### *Last Updated: Sun 04/09/2017*
+###### *Last Updated: Wed 04/11/2017*
 
 #### What we have so far
 * OSV can move and turn
 * OSV can communicate with command
 * The OSV can turn towards any specified direction, regardless of its initial direction
 * Code for OSV move from any to any point
-    * didn't work on first test, will be fixed
+    * It moves toward the point but it doesn't stop at the point
 * We know how to use the ultrasonic range sensor
 
 #### What's happening now
-* ~~Learn to use distance sensor~~ [LEARNED]
-* ~~The ultrasonic range sensor's readings needs to be calibrated~~
-    * The ultrasonic range sensor is accurate from 0 - 20 cm. Larger distances will be tested on 04/11/2017
+* Debug/fix code for OSV moving from a given point X to a given point Y
+    * OSV doesn't stop when it reaches point Y but heads in the right direction
 
 #### Upcoming
-1. Calibrate & implement distance sensor into navigation (so the OSV can see if it's in front of the wall)
+1. Implement distance sensor into navigation (so the OSV can see if it's in front of the wall)
 2. Write Travel Time algorithm
     * Will require testing to figure out how long it takes the OSV to move and turn
 3. Rewrite code for turning and moving so it's smooth
