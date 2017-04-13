@@ -36,6 +36,19 @@ float permissibleErrorForXY= 0.075; //Coordinate Transmissions are accurate to +
 #define EXIT_Bx 1.0
 #define EXIT_By 1.675
 
+/*
+
+Fire Base's center @ (2.9, 1.3)
+4 corners of the Fire Base:
+    Bottom Left @ (2.75, 1.15)
+    Top Left @ (2.75, 1.45)
+    Top Right @ (3.05, 1.45)
+    Bottom Right @ (3.05, 1.15)
+The above coordinates aren't what we actually use since we need to account for the dimensions of the OSV
+while going around the Fire Base.
+
+*/
+
 void setup(){
     rf.transmitData(START_MISSION, NO_DATA);
     rf.transmitData(NAV, FIRE);
@@ -54,15 +67,10 @@ void setup(){
 }
 
 void loop(){
-
-    //TODO didn't stop at Ax, Ay, it went thru ti
-    moveTowardsPoint(Ax, Ay);
-    while(1);
-
     //TODO Optimize exiting the wall after the basics work (i.e. implement Travel Time algorithm)
 
     //EXIT THE WALL THROUGH POINT A (for now, will incorporate distance sensor later)
-    //moveTowardsPoint(Ax, Ay);
+    moveTowardsPoint(Ax, Ay);
     //moveTowardsPoint(EXIT_Ax, EXIT_Ay);
 
     //TRAVEL TOWARDS FIRE SITE
@@ -89,6 +97,7 @@ void moveTowardsPoint(float desiredX, float desiredY){
 
     float initialX= marker.x;
     float initialY= marker.y;
+
     //distance between the initial coords and the desired coords
     distanceItShouldTravel= sqrt( pow( initialX - desiredX, 2) + pow( initialY - desiredY, 2));
 
@@ -120,7 +129,7 @@ void moveTowardsPoint(float desiredX, float desiredY){
     //while the OSV hasn't arrived at its destination
     while(!arrivedAtDestination){
         rf.updateLocation();
-        
+
         distanceTraveled= sqrt( pow( marker.x - initialX, 2) + pow( marker.y - initialY, 2));
 
         if(distanceTraveled < distanceItShouldTravel - permissibleErrorForXY)
@@ -152,7 +161,7 @@ void moveTowardsPoint(float desiredX, float desiredY){
 
 }
 
-
+//The method below allows the OSV to face any direction, regardless of its current orientation
 void face(float directionToFace){
 
     rf.updateLocation();
@@ -243,6 +252,7 @@ void moveCounterClockwise() {
 
     stop();
 }
+
 //Turn COUNTERCLOCKWISE or CLOCKWISE? That's the decision being made below.
 //returns CLOCKWISE or COUNTERCLOCKWISE
 int rotate_CCW_or_CW(float directionToFace){
@@ -264,7 +274,7 @@ int rotate_CCW_or_CW(float directionToFace){
     return CLOCKWISE;
 }
 
-
+//OSV will move at a specified speed and direction (FORWARD or BACKWARD)
 void move(int speed, int movement){
 
     for(int i= 0; i < 4; i++){
@@ -278,12 +288,15 @@ void move(int speed, int movement){
     }
 }
 
+
+//Stop all wheels
 void stop(){
     for(int i= 0; i < 4; i++){
         motor[i]->run(RELEASE);
     }
 }
 
+//Report the OSV's location
 void reportLocation(){
     rf.println("");
     rf.println("OSV is @ ");
@@ -297,6 +310,8 @@ void reportLocation(){
     rf.print(" radians.");
     rf.println("");
 }
+
+//Check if there's a wall in front
 
 ///TRAVEL TIME ALGORITHM
 int expectedArrivalTime(float x, float y){
