@@ -12,7 +12,7 @@ libraries before uploading to OSV:
     * For the ultrasonic range sensor
 
 ## Bulletin Board
-###### *Last Updated:  9:40PM, Wed 04/12/2017*
+###### *Last Updated:  Thurs 04/13/2017*
 
 #### What we have so far
 * OSV can move and turn
@@ -21,6 +21,8 @@ libraries before uploading to OSV:
 * Code for OSV move from any to any point
     * It moves toward the point but it doesn't stop at the point
 * We know how to use the ultrasonic range sensor
+* OSV can detect fires and extinguish fires
+    * needs to be implemented into main code
 
 #### What's happening now
 * Debug/fix code for OSV moving from a given point X to a given point Y

@@ -69,8 +69,16 @@ void setup(){
 void loop(){
     //TODO Optimize exiting the wall after the basics work (i.e. implement Travel Time algorithm)
 
+    rf.println("OSV will move straight forward for 10sec");
+    move(AVG_SPEED, FORWARD);
+    delay(10000);
+    stop();
+    rf.println("OSV will turn CLOCKWISE for 10 sec");
+    moveClockwise();
+    delay(10000);
+    while(1);
     //EXIT THE WALL THROUGH POINT A (for now, will incorporate distance sensor later)
-    moveTowardsPoint(Ax, Ay);
+    //moveTowardsPoint(Ax, Ay);
     //moveTowardsPoint(EXIT_Ax, EXIT_Ay);
 
     //TRAVEL TOWARDS FIRE SITE
@@ -279,9 +287,7 @@ void move(int speed, int movement){
 
     for(int i= 0; i < 4; i++){
         motor[i]->setSpeed(speed);
-        //below is for offset
     }
-    motor[3]->setSpeed(190);
 
     for(int i= 0; i < 4; i++){
         motor[i]->run(movement);
