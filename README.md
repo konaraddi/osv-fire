@@ -12,7 +12,7 @@ libraries before uploading to OSV:
     * For the ultrasonic range sensor
 
 ## Bulletin Board
-###### *Last Updated: Wed 04/11/2017*
+###### *Last Updated:  9:40PM, Wed 04/12/2017*
 
 #### What we have so far
 * OSV can move and turn

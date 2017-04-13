@@ -119,7 +119,8 @@ void moveTowardsPoint(float desiredX, float desiredY){
 
     //while the OSV hasn't arrived at its destination
     while(!arrivedAtDestination){
-
+        rf.updateLocation();
+        
         distanceTraveled= sqrt( pow( marker.x - initialX, 2) + pow( marker.y - initialY, 2));
 
         if(distanceTraveled < distanceItShouldTravel - permissibleErrorForXY)
@@ -143,7 +144,7 @@ void moveTowardsPoint(float desiredX, float desiredY){
             arrivedAtDestination= true;
             rf.updateLocation();
             reportLocation();
-            rf.println("OSV reached destination");
+            rf.println("OSV reached destination <-------------------");
         }
 
         reportLocation();
