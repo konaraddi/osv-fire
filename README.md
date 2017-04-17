@@ -1,5 +1,5 @@
 # OSV Navigation Code
-
+&copy; 2017 ENES100 (0201) Fire Team Members
 
 The `OSV_Nav.ino` contains the code for the OSV. Add the following necessary libraries before uploading to OSV:
 1. enes100 (can be found on the [ELMS](https://myelms.umd.edu/courses/1223708/files/folder/Arduino%20Files))

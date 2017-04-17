@@ -1,16 +1,11 @@
+//Copyright 2017 ENES100 (0201) Fire Team Members
+
 #include <math.h>
 #include "enes100.h"
 #include <Wire.h>
 #include <Adafruit_MotorShield.h>
 #include "utility/Adafruit_MS_PWMServoDriver.h"
 #include <NewPing.h>//for the Ultrasonic distance sensor
-
-
-//DISTANCE SENSOR SETUP BELOW
-    #define TRIG_PIN 11 //wherever the trig pin is put in
-    #define ECHO_PIN 2 //wherever the echo pin is put in
-    #define MAX_DISTANCE 100 //in centimeters
-    NewPing sonar(TRIG_PIN, ECHO_PIN, MAX_DISTANCE);
 
 SoftwareSerial mySerial(2, 3);
 Marker marker(11); //look at QR code's back for number
@@ -43,6 +38,18 @@ float permissibleErrorForXY= 0.075; //Coordinate Transmissions are accurate to +
 //Point of EXIT from area B
 #define EXIT_Bx 1.0
 #define EXIT_By 1.675
+
+//DISTANCE SENSOR SETUP BELOW
+    #define TRIG_PIN 11 //wherever the trig pin is put in
+    #define ECHO_PIN 2 //wherever the echo pin is put in
+    #define MAX_DISTANCE 100 //in centimeters
+    NewPing sonar(TRIG_PIN, ECHO_PIN, MAX_DISTANCE);
+
+//FIRE SENSORS (FROM HIGHEST TO LOWEST)
+    const int FIRE_SENSOR_1= A0;
+    const int FIRE_SENSOR_2= A1;
+    const int FIRE_SENSOR_3= A2;
+    const int FIRE_SENSOR_4= A3;
 
 /*
 
@@ -348,8 +355,6 @@ void reportLocation(){
     rf.print(" radians.");
     rf.println("");
 }
-
-//Check if there's a wall in front
 
 ///TRAVEL TIME ALGORITHM
 int expectedArrivalTime(float x, float y){
