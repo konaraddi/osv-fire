@@ -22,7 +22,7 @@ libraries before uploading to OSV:
     * It moves toward the point but it doesn't stop at the point
 * We know how to use the ultrasonic range sensor
 * OSV can detect fires and extinguish fires
-    * needs to be implemented into main code
+    * needs to be implemented into the main code
 
 #### What's happening now
 * Debug/fix code for OSV moving from a given point X to a given point Y
