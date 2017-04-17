@@ -26,7 +26,7 @@ float permissibleErrorForTheta= 0.075;//Coordinate Transmissions are accurate to
 float permissibleErrorForXY= 0.075; //Coordinate Transmissions are accurate to +/- 0.050 meters
 
 //dictates the speed of the OSV's general movement
-#define TURBO_BOOST 255 //Just for kicks
+#define MAX_SPEED 255 //Just for kicks
 #define AVG_SPEED 175 //0-255 PWM
 #define DURATION_OF_BURST 200 //in milliseconds
 
@@ -255,6 +255,10 @@ void face(float directionToFace){
 
 void moveClockwise() {
 
+    for(int i= 0; i < 4; i++){
+    //    motor[i]->setSpeed(MAX_SPEED);
+    }
+
     motor[0]->run(FORWARD);
     motor[1]->run(FORWARD);
     motor[2]->run(BACKWARD);
@@ -263,9 +267,17 @@ void moveClockwise() {
     delay(DURATION_OF_BURST);
 
     stop();
+
+    for(int i= 0; i < 4; i++){
+    //    motor[i]->setSpeed(AVG_SPEED);
+    }
 }
 
 void moveCounterClockwise() {
+
+    for(int i= 0; i < 4; i++){
+    //    motor[i]->setSpeed(MAX_SPEED);
+    }
 
     motor[0]->run(BACKWARD);
     motor[1]->run(BACKWARD);
@@ -275,6 +287,10 @@ void moveCounterClockwise() {
     delay(DURATION_OF_BURST);
 
     stop();
+
+    for(int i= 0; i < 4; i++){
+    //    motor[i]->setSpeed(AVG_SPEED);
+    }
 }
 
 //Turn COUNTERCLOCKWISE or CLOCKWISE? That's the decision being made below.
