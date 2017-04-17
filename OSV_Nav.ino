@@ -3,6 +3,14 @@
 #include <Wire.h>
 #include <Adafruit_MotorShield.h>
 #include "utility/Adafruit_MS_PWMServoDriver.h"
+#include <NewPing.h>//for the Ultrasonic distance sensor
+
+
+//DISTANCE SENSOR SETUP BELOW
+    #define TRIG_PIN 11 //wherever the trig pin is put in
+    #define ECHO_PIN 2 //wherever the echo pin is put in
+    #define MAX_DISTANCE 100 //in centimeters
+    NewPing sonar(TRIG_PIN, ECHO_PIN, MAX_DISTANCE);
 
 SoftwareSerial mySerial(2, 3);
 Marker marker(11); //look at QR code's back for number
@@ -69,20 +77,28 @@ void setup(){
 void loop(){
     //TODO Optimize exiting the wall after the basics work (i.e. implement Travel Time algorithm)
 
-    rf.println("OSV will move straight forward for 10sec");
-    move(AVG_SPEED, FORWARD);
-    delay(10000);
-    stop();
-    rf.println("OSV will turn CLOCKWISE for 10 sec");
-    moveClockwise();
-    delay(10000);
-    while(1);
     //EXIT THE WALL THROUGH POINT A (for now, will incorporate distance sensor later)
-    //moveTowardsPoint(Ax, Ay);
-    //moveTowardsPoint(EXIT_Ax, EXIT_Ay);
+    /*
+    moveTowardsPoint(Ax, Ay);
+    face(0);
+    delay(1000);
+    int distanceAhead= (int) sonar.ping_cm();//casting unsigned long to an int
+    if(sonar.ping_cm() > 5 && sonar.ping_cm() < 60){
+        moveTowardsPoint(Bx, By);
+        moveTowardsPoint(EXIT_Bx, EXIT_By);
+    }else{
+        moveTowardsPoint(EXIT_Ax, EXIT_Ay);
+    }
+    */
 
     //TRAVEL TOWARDS FIRE SITE
-
+    /*
+    move(AVG_SPEED, FORWARD);
+    delay(1000);
+    stop();
+    moveTowardsPoint(2.0, 1.0);
+    face(0);//OSV should be in center of arena, facing East
+    */
     //FIRE SITE ROUND 1
 
     //FIRE SITE ROUND 2
