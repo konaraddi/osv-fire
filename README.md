@@ -11,25 +11,21 @@ The `OSV_Nav.ino` contains the code for the OSV. Add the following necessary lib
     * For the ultrasonic range sensor
 
 ## Bulletin Board
-###### *Last Updated:  Tues 04/18/2017*
+###### *Last Updated: Tues 04/18/2017*
 
-#### What we have so far
-* OSV can move and turn
-* OSV can communicate with command
-* The OSV can turn towards any specified direction, regardless of its initial direction
-* OSV can move from any point to any point
-* We know how to use the ultrasonic range sensor
-    * Implemented into code, requires testing
-* OSV can detect fires and extinguish fires
-    * needs to be implemented into the main code
+#### How's the OSV coming along?
+* OSV can communicate with "command"
+* OSV can orient itself in any direction
+* OSV can move straight to any specified point, regardless of its initial orientation or position
+* We know how to use the fire & ultrasonic sensors
 
-#### What's happening now
-* Test the Exit the Wall code (code has been written, needs to be tested)
+#### What's next?
+* Test the Exit the Wall code (code has been written, requires testing)
 
 #### Upcoming
 1. Implement fire detection and extinguishment in code
+    * Test that OSV can complete it's objective
 2. Write Travel Time algorithm
-    * Will require testing to figure out how long it takes for the OSV to move and turn
 3. Rewrite code for turning and moving so it's smooth
     * Right now we use short bursts in linear movement and turning. In between these bursts,
     we check the OSV's coordinates so the OSV can decide whether or not to keep moving forward.
