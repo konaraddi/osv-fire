@@ -7,6 +7,7 @@
 #include "utility/Adafruit_MS_PWMServoDriver.h"
 #include <NewPing.h>//for the Ultrasonic distance sensor
 
+
 SoftwareSerial mySerial(2, 3);
 Marker marker(11); //look at QR code's back for number
 RF_Comm rf(&mySerial, &marker);
@@ -79,15 +80,18 @@ void setup(){
     //motor[2] and motor [3] are motors on the right (top view of OSV with front facing North)
     motor[2]=AFMS.getMotor(3);
     motor[3]=AFMS.getMotor(4);
+
+    pinMode(8, OUTPUT);
+    digitalWrite(8, HIGH);
 }
 
 void loop(){
     //TODO Optimize exiting the wall after the basics work (i.e. implement Travel Time algorithm)
 
     //EXIT THE WALL THROUGH POINT A (for now, will incorporate distance sensor later)
-    /*
     moveTowardsPoint(Ax, Ay);
     face(0);
+    /*
     delay(1000);
     int distanceAhead= (int) sonar.ping_cm();//casting unsigned long to an int
     if(sonar.ping_cm() > 5 && sonar.ping_cm() < 60){
@@ -114,6 +118,7 @@ void loop(){
     The statement below will run forever so this current loop() will never
     finish running. The purpose of this is for the loop() to never repeat.
     */
+    while(1);
 }
 
 
@@ -208,12 +213,8 @@ void face(float directionToFace){
     if(directionToFace == 0){
 
         if(marker.theta < 0){
-            positive2PI_DesiredTheta= 2 * PI;
-            positive2PI_CurrentTheta= 2 * PI;
-        }
-
-        if(marker.theta >= 0){
-            positive2PI_DesiredTheta= 0;
+            positive2PI_DesiredTheta+= 2 * PI;
+            positive2PI_CurrentTheta+= 2 * PI;
         }
 
     }else{
@@ -249,15 +250,11 @@ void face(float directionToFace){
         }
 
         rf.print("OSV's Theta (in 0->2pi system):  ");
-        rf.println(marker.theta);
-        rf.println("OSV is ");
+        rf.println(positive2PI_CurrentTheta);
+        rf.print("OSV is ");
         rf.print(fabs(positive2PI_CurrentTheta - positive2PI_DesiredTheta));
-        rf.print(" away from directionToFace");
+        rf.println(" away from directionToFace");
     }
-
-    rf.updateLocation();
-    reportLocation();
-
 }
 
 void moveClockwise() {
@@ -271,7 +268,7 @@ void moveClockwise() {
     motor[2]->run(BACKWARD);
     motor[3]->run(BACKWARD);
 
-    delay(DURATION_OF_BURST);
+    delay(DURATION_OF_BURST / 2);
 
     stop();
 
@@ -291,7 +288,7 @@ void moveCounterClockwise() {
     motor[2]->run(FORWARD);
     motor[3]->run(FORWARD);
 
-    delay(DURATION_OF_BURST);
+    delay(DURATION_OF_BURST / 2);
 
     stop();
 
@@ -303,22 +300,32 @@ void moveCounterClockwise() {
 //Turn COUNTERCLOCKWISE or CLOCKWISE? That's the decision being made below.
 //returns CLOCKWISE or COUNTERCLOCKWISE
 int rotate_CCW_or_CW(float directionToFace){
+    reportLocation();
+    rf.print("DirectionToFace: ");
+    rf.println(directionToFace);
+    float tmpDirectionToFace= directionToFace + PI;
+    if(tmpDirectionToFace > PI){
+        tmpDirectionToFace-= 2 * PI;
+    }
+    rf.print("TempTheta: ");
+    rf.println(tmpDirectionToFace);
 
-    //convert to 0 -> 2pi system for calculations
-    int positive2PI_DesiredTheta= directionToFace;
-    int positive2PI_CurrentTheta= marker.theta;
-    if(directionToFace < 0){ positive2PI_DesiredTheta+= 2 * PI; }
-    if(marker.theta < 0){ positive2PI_CurrentTheta+= 2 * PI; }
-
-    if(positive2PI_CurrentTheta < positive2PI_DesiredTheta){
-        if(fabs(marker.theta - directionToFace) < PI){
-            rf.println("OSV will turn COUNTERCLOCKWISE");
+    if(tmpDirectionToFace < 0){
+        if(tmpDirectionToFace < marker.theta && marker.theta < directionToFace){
+            rf.println("CCW");
             return COUNTERCLOCKWISE;
         }
+        rf.println("CW");
+        return CLOCKWISE;
+    }else{
+        if(tmpDirectionToFace > marker.theta && marker.theta > directionToFace){
+            rf.println("CCW");
+            return CLOCKWISE;
+        }
+        rf.println("CW");
+        return COUNTERCLOCKWISE;
     }
 
-    rf.println("OSV will turn CLOCKWISE");
-    return CLOCKWISE;
 }
 
 //OSV will move at a specified speed and direction (FORWARD or BACKWARD)
