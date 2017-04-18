@@ -3,7 +3,6 @@
 #include <Wire.h>
 #include <Adafruit_MotorShield.h>
 #include "utility/Adafruit_MS_PWMServoDriver.h"
-#include <SoftwareSerial.h>
 
 SoftwareSerial mySerial(2, 3);
 Marker marker(11); //look at QR code's back for number
