@@ -24,7 +24,8 @@ float permissibleErrorForXY= 0.075; //Coordinate Transmissions are accurate to +
 //dictates the speed of the OSV's general movement
 #define MAX_SPEED 255 //Just for kicks
 #define AVG_SPEED 175 //0-255 PWM
-#define DURATION_OF_BURST 200 //in milliseconds
+#define LOW_SPEED 50 //0-255 PWM
+#define DURATION_OF_BURST 300 //in milliseconds
 
 //FOR EXITING THE WALL
 //Area A (an area to which the OSV should go to before making an exit)
@@ -41,8 +42,8 @@ float permissibleErrorForXY= 0.075; //Coordinate Transmissions are accurate to +
 #define EXIT_By 1.675
 
 //DISTANCE SENSOR SETUP BELOW
-    #define TRIG_PIN 11 //wherever the trig pin is put in
-    #define ECHO_PIN 2 //wherever the echo pin is put in
+    #define TRIG_PIN 5 //wherever the trig pin is put in
+    #define ECHO_PIN 4 //wherever the echo pin is put in
     #define MAX_DISTANCE 100 //in centimeters
     NewPing sonar(TRIG_PIN, ECHO_PIN, MAX_DISTANCE);
 
@@ -88,10 +89,11 @@ void setup(){
 void loop(){
     //TODO Optimize exiting the wall after the basics work (i.e. implement Travel Time algorithm)
 
-    //EXIT THE WALL THROUGH POINT A (for now, will incorporate distance sensor later)
-    moveTowardsPoint(Ax, Ay);
     face(0);
+    //EXIT THE WALL THROUGH POINT A (for now, will incorporate distance sensor later)
     /*
+    moveTowardsPoint(Ax - 0.1, Ay);
+    face(0);
     delay(1000);
     int distanceAhead= (int) sonar.ping_cm();//casting unsigned long to an int
     if(sonar.ping_cm() > 5 && sonar.ping_cm() < 60){
@@ -237,9 +239,9 @@ void face(float directionToFace){
         rf.println(directionToFace);
 
         if(rotate_CCW_or_CW(directionToFace) == CLOCKWISE){
-            moveClockwise();
+            moveClockwise2();
         }else{
-            moveCounterClockwise();
+            moveCounterClockwise2();
         }
 
         rf.updateLocation();
@@ -257,7 +259,73 @@ void face(float directionToFace){
     }
 }
 
-void moveClockwise() {
+void moveClockwise2(){
+    rf.println("K- turning");
+    motor[0]->setSpeed(LOW_SPEED);
+    motor[1]->setSpeed(LOW_SPEED);
+    motor[2]->setSpeed(MAX_SPEED);
+    motor[3]->setSpeed(MAX_SPEED);
+
+    for(int i= 0; i < 4; i++){
+        motor[i]->run(BACKWARD);
+    }
+
+    delay(DURATION_OF_BURST * 2);
+    stop();
+
+    delay(1000);
+    for(int i= 0; i < 4; i++){
+        motor[i]->setSpeed(LOW_SPEED);
+    }
+    motor[0]->setSpeed(MAX_SPEED);
+    motor[1]->setSpeed(MAX_SPEED);
+
+    for(int i=0 ; i < 4; i++){
+        motor[i]->run(FORWARD);
+    }
+
+    delay(DURATION_OF_BURST * 2);
+    stop();
+
+    for(int i= 0; i < 4 ; i ++){
+        motor[i]->setSpeed(AVG_SPEED);
+    }
+}
+
+void moveCounterClockwise2(){
+    rf.println("K- turning");
+    motor[0]->setSpeed(MAX_SPEED);
+    motor[1]->setSpeed(MAX_SPEED);
+    motor[2]->setSpeed(LOW_SPEED);
+    motor[3]->setSpeed(LOW_SPEED);
+
+    for(int i= 0 ; i < 4; i++){
+        motor[i]->run(BACKWARD);
+    }
+
+    delay(DURATION_OF_BURST * 2);
+    stop();
+
+    delay(1000);
+    for(int i= 0; i < 4; i++){
+        motor[i]->setSpeed(LOW_SPEED);
+    }
+    motor[2]->setSpeed(MAX_SPEED);
+    motor[3]->setSpeed(MAX_SPEED);
+
+    for(int i=0 ; i < 4; i++){
+        motor[i]->run(FORWARD);
+    }
+
+    delay(DURATION_OF_BURST * 2);
+    stop();
+
+    for(int i= 0; i < 4 ; i ++){
+        motor[i]->setSpeed(AVG_SPEED);
+    }
+}
+
+void mXoveClockwise() {
 
     for(int i= 0; i < 4; i++){
     //    motor[i]->setSpeed(MAX_SPEED);
@@ -268,7 +336,7 @@ void moveClockwise() {
     motor[2]->run(BACKWARD);
     motor[3]->run(BACKWARD);
 
-    delay(DURATION_OF_BURST / 2);
+    delay(DURATION_OF_BURST);
 
     stop();
 
@@ -277,7 +345,7 @@ void moveClockwise() {
     }
 }
 
-void moveCounterClockwise() {
+void mXoveCounterClockwise() {
 
     for(int i= 0; i < 4; i++){
     //    motor[i]->setSpeed(MAX_SPEED);
@@ -288,7 +356,7 @@ void moveCounterClockwise() {
     motor[2]->run(FORWARD);
     motor[3]->run(FORWARD);
 
-    delay(DURATION_OF_BURST / 2);
+    delay(DURATION_OF_BURST);
 
     stop();
 

@@ -11,16 +11,19 @@ The `OSV_Nav.ino` contains the code for the OSV. Add the following necessary lib
     * For the ultrasonic range sensor
 
 ## Bulletin Board
-###### *Last Updated: Tues 04/18/2017*
+###### *Last Updated: Thurs 04/20/2017*
 
 #### How's the OSV coming along?
 * OSV can communicate with "command"
 * OSV can orient itself in any direction
 * OSV can move straight to any specified point, regardless of its initial orientation or position
 * We know how to use the fire & ultrasonic sensors
+* OSV can exit the wall (if we're not using K-turns)
+    * however, it digs in the sand when trying to turn
 
 #### What's next?
-* Test the Exit the Wall code (code has been written, requires testing)
+* Switch OSV's turning mechanism to K-turns so it does not dig in the sand
+    * K-turns need to be made shorter and faster
 
 #### Upcoming
 1. Implement fire detection and extinguishment in code
