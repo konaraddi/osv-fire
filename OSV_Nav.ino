@@ -9,7 +9,7 @@
 
 
 SoftwareSerial mySerial(2, 3);
-Marker marker(11); //look at QR code's back for number
+Marker marker(111); //look at QR code's back for number
 RF_Comm rf(&mySerial, &marker);
 
 Adafruit_MotorShield AFMS = Adafruit_MotorShield();
@@ -18,14 +18,14 @@ Adafruit_DCMotor *motor[4];
 #define CLOCKWISE 0
 #define COUNTERCLOCKWISE 1
 
-float permissibleErrorForTheta= 0.075;//Coordinate Transmissions are accurate to +/- 0.050 radians
-float permissibleErrorForXY= 0.075; //Coordinate Transmissions are accurate to +/- 0.050 meters
+float permissibleErrorForTheta= 0.09;//Coordinate Transmissions are accurate to +/- 0.050 radians
+float permissibleErrorForXY= 0.09; //Coordinate Transmissions are accurate to +/- 0.050 meters
 
 //dictates the speed of the OSV's general movement
 #define MAX_SPEED 255 //Just for kicks
 #define AVG_SPEED 175 //0-255 PWM
-#define LOW_SPEED 50 //0-255 PWM
-#define DURATION_OF_BURST 300 //in milliseconds
+#define LOW_SPEED 170 //0-255 PWM
+#define DURATION_OF_BURST 500 //in milliseconds
 
 //FOR EXITING THE WALL
 //Area A (an area to which the OSV should go to before making an exit)
@@ -87,22 +87,19 @@ void setup(){
 }
 
 void loop(){
-    //TODO Optimize exiting the wall after the basics work (i.e. implement Travel Time algorithm)
-
-    face(0);
     //EXIT THE WALL THROUGH POINT A (for now, will incorporate distance sensor later)
-    /*
+    //all the +/- 0.1/0.2 offsets at for compensating for the marker's offset
     moveTowardsPoint(Ax - 0.1, Ay);
     face(0);
     delay(1000);
     int distanceAhead= (int) sonar.ping_cm();//casting unsigned long to an int
     if(sonar.ping_cm() > 5 && sonar.ping_cm() < 60){
-        moveTowardsPoint(Bx, By);
-        moveTowardsPoint(EXIT_Bx, EXIT_By);
+        moveTowardsPoint(Bx - 0.1, By + 0.2);
+        moveTowardsPoint(EXIT_Bx, EXIT_By + 0.2);
     }else{
-        moveTowardsPoint(EXIT_Ax, EXIT_Ay);
+        moveTowardsPoint(EXIT_Ax, EXIT_Ay - 0.1);
     }
-    */
+
 
     //TRAVEL TOWARDS FIRE SITE
     /*
@@ -131,7 +128,6 @@ void moveTowardsPoint(float desiredX, float desiredY){
     double distanceTraveled;//the actual distance the OSV travels
 
     rf.updateLocation();
-    reportLocation();
 
     float initialX= marker.x;
     float initialY= marker.y;
@@ -148,9 +144,6 @@ void moveTowardsPoint(float desiredX, float desiredY){
     //by casting a double as a float, there may be some loss in precision
     float directionToFace= (float) atan2(changeInY, changeInX);
 
-    rf.println("OSV needs to face: ");
-    rf.print(directionToFace);
-    rf.println("");
     face(directionToFace);
 
     /*
@@ -166,35 +159,38 @@ void moveTowardsPoint(float desiredX, float desiredY){
 
     //while the OSV hasn't arrived at its destination
     while(!arrivedAtDestination){
-        rf.updateLocation();
 
         distanceTraveled= sqrt( pow( marker.x - initialX, 2) + pow( marker.y - initialY, 2));
 
         if(distanceTraveled < distanceItShouldTravel - permissibleErrorForXY)
         {
+            rf.println("OSV has YET to reach its destination");
             //OSV has yet to reach destination so OSV should move forward a little bit
             move(AVG_SPEED, FORWARD);
-            delay(DURATION_OF_BURST * 2);//x2 to make it go faster
+            delay(DURATION_OF_BURST);
             stop();
+
         }
         else if(distanceTraveled > distanceItShouldTravel + permissibleErrorForXY)
         {
+            rf.println("OSV has gone PAST its destination");
             //OSV has gone past it's destination so OSV should move a backward a little bit
             move(AVG_SPEED, BACKWARD);
             delay((int) DURATION_OF_BURST / N);
             stop();
             N++;//this makes sure the OSV doesn't end up in an infinite loop of going backward and forward
+
         }
         else
         {
             //OSV reached destination
             arrivedAtDestination= true;
-            rf.updateLocation();
-            reportLocation();
             rf.println("OSV reached destination <-------------------");
         }
 
+        rf.updateLocation();
         reportLocation();
+
     }
 
 }
@@ -203,7 +199,6 @@ void moveTowardsPoint(float desiredX, float desiredY){
 void face(float directionToFace){
 
     rf.updateLocation();
-    reportLocation();
 
     for(int i= 0; i < 4; i++){
         motor[i]->setSpeed(AVG_SPEED);
@@ -251,16 +246,11 @@ void face(float directionToFace){
             positive2PI_CurrentTheta+= 2 * PI;
         }
 
-        rf.print("OSV's Theta (in 0->2pi system):  ");
-        rf.println(positive2PI_CurrentTheta);
-        rf.print("OSV is ");
-        rf.print(fabs(positive2PI_CurrentTheta - positive2PI_DesiredTheta));
-        rf.println(" away from directionToFace");
     }
 }
 
 void moveClockwise2(){
-    rf.println("K- turning");
+    rf.println("K- turning CW");
     motor[0]->setSpeed(LOW_SPEED);
     motor[1]->setSpeed(LOW_SPEED);
     motor[2]->setSpeed(MAX_SPEED);
@@ -270,7 +260,7 @@ void moveClockwise2(){
         motor[i]->run(BACKWARD);
     }
 
-    delay(DURATION_OF_BURST * 2);
+    delay(DURATION_OF_BURST);
     stop();
 
     delay(1000);
@@ -284,7 +274,7 @@ void moveClockwise2(){
         motor[i]->run(FORWARD);
     }
 
-    delay(DURATION_OF_BURST * 2);
+    delay(DURATION_OF_BURST);
     stop();
 
     for(int i= 0; i < 4 ; i ++){
@@ -293,7 +283,7 @@ void moveClockwise2(){
 }
 
 void moveCounterClockwise2(){
-    rf.println("K- turning");
+    rf.println("K- turning CCW");
     motor[0]->setSpeed(MAX_SPEED);
     motor[1]->setSpeed(MAX_SPEED);
     motor[2]->setSpeed(LOW_SPEED);
@@ -303,7 +293,7 @@ void moveCounterClockwise2(){
         motor[i]->run(BACKWARD);
     }
 
-    delay(DURATION_OF_BURST * 2);
+    delay(DURATION_OF_BURST);
     stop();
 
     delay(1000);
@@ -317,7 +307,7 @@ void moveCounterClockwise2(){
         motor[i]->run(FORWARD);
     }
 
-    delay(DURATION_OF_BURST * 2);
+    delay(DURATION_OF_BURST);
     stop();
 
     for(int i= 0; i < 4 ; i ++){
@@ -325,58 +315,13 @@ void moveCounterClockwise2(){
     }
 }
 
-void mXoveClockwise() {
-
-    for(int i= 0; i < 4; i++){
-    //    motor[i]->setSpeed(MAX_SPEED);
-    }
-
-    motor[0]->run(FORWARD);
-    motor[1]->run(FORWARD);
-    motor[2]->run(BACKWARD);
-    motor[3]->run(BACKWARD);
-
-    delay(DURATION_OF_BURST);
-
-    stop();
-
-    for(int i= 0; i < 4; i++){
-    //    motor[i]->setSpeed(AVG_SPEED);
-    }
-}
-
-void mXoveCounterClockwise() {
-
-    for(int i= 0; i < 4; i++){
-    //    motor[i]->setSpeed(MAX_SPEED);
-    }
-
-    motor[0]->run(BACKWARD);
-    motor[1]->run(BACKWARD);
-    motor[2]->run(FORWARD);
-    motor[3]->run(FORWARD);
-
-    delay(DURATION_OF_BURST);
-
-    stop();
-
-    for(int i= 0; i < 4; i++){
-    //    motor[i]->setSpeed(AVG_SPEED);
-    }
-}
-
 //Turn COUNTERCLOCKWISE or CLOCKWISE? That's the decision being made below.
 //returns CLOCKWISE or COUNTERCLOCKWISE
 int rotate_CCW_or_CW(float directionToFace){
-    reportLocation();
-    rf.print("DirectionToFace: ");
-    rf.println(directionToFace);
     float tmpDirectionToFace= directionToFace + PI;
     if(tmpDirectionToFace > PI){
         tmpDirectionToFace-= 2 * PI;
     }
-    rf.print("TempTheta: ");
-    rf.println(tmpDirectionToFace);
 
     if(tmpDirectionToFace < 0){
         if(tmpDirectionToFace < marker.theta && marker.theta < directionToFace){

@@ -18,19 +18,17 @@ The `OSV_Nav.ino` contains the code for the OSV. Add the following necessary lib
 * OSV can orient itself in any direction
 * OSV can move straight to any specified point, regardless of its initial orientation or position
 * We know how to use the fire & ultrasonic sensors
-* OSV can exit the wall (if we're not using K-turns)
-    * however, it digs in the sand when trying to turn
-
+* OSV can exit the wall <b>using K-turns</b> sometimes
+    * "sometimes" b/c programmatically offsetting for the QR code's position works sometimes
+    * we technically can offset the QR code in real time, but it might be easier to physically put
+    the marker in the center
 #### What's next?
-* Switch OSV's turning mechanism to K-turns so it does not dig in the sand
-    * K-turns need to be made shorter and faster
+* Offset the coordinates the OSV should go to in real time programmatically
+    * or move the marker physically to the center (e.g. using a popsicle stick)
 
 #### Upcoming
 1. Implement fire detection and extinguishment in code
     * Test that OSV can complete it's objective
 2. Write Travel Time algorithm
-3. Rewrite code for turning and moving so it's smooth
-    * Right now we use short bursts in linear movement and turning. In between these bursts,
-    we check the OSV's coordinates so the OSV can decide whether or not to keep moving forward.
-    However, this is slow and is for testing purposes. So later I'll be writing code such that
-    the OSV only uses bursts when it's coming close to desired position/orientation.
+    * so the OSV can exit the wall as fast as possible
+3. Make linear movements smooth (i.e. no bursts)
