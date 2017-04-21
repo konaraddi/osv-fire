@@ -11,7 +11,8 @@ The `OSV_Nav.ino` contains the code for the OSV. Add the following necessary lib
     * For the ultrasonic range sensor
 
 ## Bulletin Board
-###### *Last Updated: Thurs 04/20/2017*
+###### *Last Updated: Friday 04/21/2017*
+Message Omkar if something is unclear.
 
 #### How's the OSV coming along?
 * OSV can communicate with "command"
@@ -20,8 +21,9 @@ The `OSV_Nav.ino` contains the code for the OSV. Add the following necessary lib
 * We know how to use the fire & ultrasonic sensors
 * OSV can exit the wall <b>using K-turns</b> sometimes
     * "sometimes" b/c programmatically offsetting for the QR code's position works sometimes
-    * we technically can offset the QR code in real time, but it might be easier to physically put
+    * we technically can offset the QR code in real time (as opposed to having an explicit offset), but it might be easier to physically put
     the marker in the center
+
 #### What's next?
 * Offset the coordinates the OSV should go to in real time programmatically
     * or move the marker physically to the center (e.g. using a popsicle stick)
