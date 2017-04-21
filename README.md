@@ -19,10 +19,15 @@ Message Omkar if something is unclear.
 * OSV can orient itself in any direction
 * OSV can move straight to any specified point, regardless of its initial orientation or position
 * We know how to use the fire & ultrasonic sensors
-* OSV can exit the wall <b>using K-turns</b> sometimes
-    * "sometimes" b/c programmatically offsetting for the QR code's position works sometimes
-    * we technically can offset the QR code in real time (as opposed to having an explicit offset), but it might be easier to physically put
-    the marker in the center
+* <b>OSV is __unable__ to consistently exit the wall using K-turns</b>
+
+###### ISSUES:
+* K-turns are very slow
+* OSV is unable to face the correct direction consistently
+    * the OSV will continue to turn CW or CCW
+* OSV often overshoots/undershoots when moving to a point
+* offsetting for the marker's position is not possible to do without dynamic offsetting
+(i.e. offset needs to be done in real time or the marker needs to be moved forward)
 
 #### What's next?
 * Offset the coordinates the OSV should go to in real time programmatically
