@@ -1,10 +1,13 @@
 # OSV Navigation Code
 &copy; 2017 ENES100 (0201) Fire Team Members
 
+## Requirements
 The `OSV_Nav.ino` contains the code for the OSV. Add the following necessary libraries before uploading to OSV:
-1. enes100 (can be found on the [ELMS](https://myelms.umd.edu/courses/1223708/files/folder/Arduino%20Files))
-2. Adafruit_MotorShield (check Sketch>Include Library>Recommended Libraries w/in
-    the Arduino IDE)
+1. [umdenes100](https://github.com/umdenes100/arduinolibrary)
+    * Rename to `enes100`
+2. [Adafruit_MotorShield](https://github.com/adafruit/Adafruit_Motor_Shield_V2_Library)
+    * If you're using Linux, you may need to comment out the `yield()`
+    * Rename to `Adafruit_MotorShield`
 3. Wire (check Sketch>Include Library>Recommended Libraries w/in
     the Arduino IDE)
 4. [NewPing](https://bitbucket.org/teckel12/arduino-new-ping/downloads/)
