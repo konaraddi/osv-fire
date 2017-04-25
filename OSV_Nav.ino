@@ -9,7 +9,7 @@
 
 
 SoftwareSerial mySerial(2, 3);
-Marker marker(111); //look at QR code's back for number
+Marker marker(11); //look at QR code's back for number
 RF_Comm rf(&mySerial, &marker);
 
 Adafruit_MotorShield AFMS = Adafruit_MotorShield();
@@ -18,7 +18,7 @@ Adafruit_DCMotor *motor[4];
 #define CLOCKWISE 0
 #define COUNTERCLOCKWISE 1
 
-float permissibleErrorForTheta= 0.09;//Coordinate Transmissions are accurate to +/- 0.050 radians
+float permissibleErrorForTheta= 0.1;//Coordinate Transmissions are accurate to +/- 0.050 radians
 float permissibleErrorForXY= 0.09; //Coordinate Transmissions are accurate to +/- 0.050 meters
 
 //dictates the speed of the OSV's general movement
@@ -87,28 +87,77 @@ void setup(){
 }
 
 void loop(){
+
+    int delayTime= 150;
+
+    while(marker.y - 1.25 < 0){
+        move(AVG_SPEED, BACKWARD);
+        delay(delayTime);
+        stop();
+        rf.updateLocation();
+        delay(delayTime);
+    }
+
+    delay(500);
+    if(fireDetectedBy(FIRE_SENSOR_1) || fireDetectedBy(FIRE_SENSOR_2)){
+        rf.transmitData(BASE, FIRE_SITE_A);
+    }
+
+    delay(500);
+    if(fireDetectedBy(FIRE_SENSOR_3) || fireDetectedBy(FIRE_SENSOR_4)){
+        rf.transmitData(BASE, FIRE_SITE_D);
+    }
+
+    delay(5000);
+
+    while(marker.y - 1.42 < 0){
+        move(AVG_SPEED, BACKWARD);
+        delay(delayTime);
+        stop();
+        rf.updateLocation();
+        delay(delayTime);
+    }
+
+    delay(500);
+    if(fireDetectedBy(FIRE_SENSOR_1) || fireDetectedBy(FIRE_SENSOR_2)){
+        rf.transmitData(BASE, FIRE_SITE_B);
+    }
+
+    delay(500);
+    if(fireDetectedBy(FIRE_SENSOR_3) || fireDetectedBy(FIRE_SENSOR_4)){
+        rf.transmitData(BASE, FIRE_SITE_C);
+    }
+
+
     //EXIT THE WALL THROUGH POINT A (for now, will incorporate distance sensor later)
     //all the +/- 0.1/0.2 offsets at for compensating for the marker's offset
-    moveTowardsPoint(Ax - 0.1, Ay);
+/*
+    moveTowardsPoint(Ax - 0.1, Ay - 0.08);
     face(0);
     delay(1000);
     int distanceAhead= (int) sonar.ping_cm();//casting unsigned long to an int
     if(sonar.ping_cm() > 5 && sonar.ping_cm() < 60){
+        rf.println("There's a wall, OSV will try to exit from area B");
         moveTowardsPoint(Bx - 0.1, By + 0.2);
         moveTowardsPoint(EXIT_Bx, EXIT_By + 0.2);
     }else{
+        rf.println("There's no wall here");
         moveTowardsPoint(EXIT_Ax, EXIT_Ay - 0.1);
     }
-
+*/
 
     //TRAVEL TOWARDS FIRE SITE
-    /*
+/*
     move(AVG_SPEED, FORWARD);
     delay(1000);
     stop();
-    moveTowardsPoint(2.0, 1.0);
+
+    moveTowardsPoint(2.0, 0.9);
     face(0);//OSV should be in center of arena, facing East
-    */
+
+    moveTowardsPoint(3.1, 0.9);//OSV moves towards far corner of the fire site
+    face(PI / 2);//face north
+*/
     //FIRE SITE ROUND 1
 
     //FIRE SITE ROUND 2
@@ -117,13 +166,13 @@ void loop(){
     The statement below will run forever so this current loop() will never
     finish running. The purpose of this is for the loop() to never repeat.
     */
+
     while(1);
 }
 
 
 //Use this method for the OSV to move from its current point to any other point
 void moveTowardsPoint(float desiredX, float desiredY){
-    rf.println("reached move towards point");
     double distanceItShouldTravel;//the distance we expect the OSV to travel
     double distanceTraveled;//the actual distance the OSV travels
 
@@ -159,6 +208,7 @@ void moveTowardsPoint(float desiredX, float desiredY){
 
     //while the OSV hasn't arrived at its destination
     while(!arrivedAtDestination){
+        delay(500);//because we're using max speeds so the motors don't burn out in between bursts of movement
 
         distanceTraveled= sqrt( pow( marker.x - initialX, 2) + pow( marker.y - initialY, 2));
 
@@ -166,7 +216,7 @@ void moveTowardsPoint(float desiredX, float desiredY){
         {
             rf.println("OSV has YET to reach its destination");
             //OSV has yet to reach destination so OSV should move forward a little bit
-            move(AVG_SPEED, FORWARD);
+            move(MAX_SPEED, FORWARD);
             delay(DURATION_OF_BURST);
             stop();
 
@@ -175,7 +225,7 @@ void moveTowardsPoint(float desiredX, float desiredY){
         {
             rf.println("OSV has gone PAST its destination");
             //OSV has gone past it's destination so OSV should move a backward a little bit
-            move(AVG_SPEED, BACKWARD);
+            move(MAX_SPEED, BACKWARD);
             delay((int) DURATION_OF_BURST / N);
             stop();
             N++;//this makes sure the OSV doesn't end up in an infinite loop of going backward and forward
@@ -229,9 +279,6 @@ void face(float directionToFace){
 
     //check if OSV's current theta is within +/- permissibleErrorForTheta of the desired theta
     while( fabs(positive2PI_CurrentTheta - positive2PI_DesiredTheta) > permissibleErrorForTheta){
-
-        rf.print("OSV isn't close enough to ");
-        rf.println(directionToFace);
 
         if(rotate_CCW_or_CW(directionToFace) == CLOCKWISE){
             moveClockwise2();
@@ -325,17 +372,14 @@ int rotate_CCW_or_CW(float directionToFace){
 
     if(tmpDirectionToFace < 0){
         if(tmpDirectionToFace < marker.theta && marker.theta < directionToFace){
-            rf.println("CCW");
             return COUNTERCLOCKWISE;
         }
-        rf.println("CW");
         return CLOCKWISE;
     }else{
         if(tmpDirectionToFace > marker.theta && marker.theta > directionToFace){
-            rf.println("CCW");
             return CLOCKWISE;
         }
-        rf.println("CW");
+
         return COUNTERCLOCKWISE;
     }
 
@@ -376,6 +420,9 @@ void reportLocation(){
     rf.println("");
 }
 
+bool fireDetectedBy(int whichSensor){
+    return (analogRead(whichSensor) <= 975);
+}
 ///TRAVEL TIME ALGORITHM
 int expectedArrivalTime(float x, float y){
 

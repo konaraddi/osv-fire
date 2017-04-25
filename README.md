@@ -22,23 +22,15 @@ Message Omkar if something is unclear.
 * OSV can orient itself in any direction
 * OSV can move straight to any specified point, regardless of its initial orientation or position
 * We know how to use the fire & ultrasonic sensors
-* <b>OSV is __unable__ to consistently exit the wall using K-turns</b>
-
-###### ISSUES:
-* K-turns are very slow
-* OSV is unable to face the correct direction consistently
-    * the OSV will continue to turn CW or CCW
-* OSV often overshoots/undershoots when moving to a point
-* offsetting for the marker's position is not possible to do without dynamic offsetting
-(i.e. offset needs to be done in real time or the marker needs to be moved forward)
+* OSV can consistently exit the wall, regardless of wall's orientation
+* OSV can drive next to the fire site and detect fires accurately
 
 #### What's next?
-* Offset the coordinates the OSV should go to in real time programmatically
-    * or move the marker physically to the center (e.g. using a popsicle stick)
+* Write code for the OSV to move to the fire site
+    * i.e. have the OSV do everything in one run
+* Write code for the OSV to extinguish fires (bonus objective)
 
 #### Upcoming
-1. Implement fire detection and extinguishment in code
-    * Test that OSV can complete it's objective
+1. Write code for the OSV to extinguish fires (bonus objective)
 2. Write Travel Time algorithm
     * so the OSV can exit the wall as fast as possible
-3. Make linear movements smooth (i.e. no bursts)
