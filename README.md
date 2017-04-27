@@ -18,19 +18,13 @@ The `OSV_Nav.ino` contains the code for the OSV. Add the following necessary lib
 Message Omkar if something is unclear.
 
 #### How's the OSV coming along?
-* OSV can communicate with "command"
-* OSV can orient itself in any direction
-* OSV can move straight to any specified point, regardless of its initial orientation or position
-* We know how to use the fire & ultrasonic sensors
-* OSV can consistently exit the wall, regardless of wall's orientation
-* OSV can drive next to the fire site and detect fires accurately
+* OSV can do everything up to the basic mission objectives
+    * Unable to consistently backup beside the fire site. It goes off course
+    when backing up.
 
 #### What's next?
-* Write code for the OSV to move to the fire site
-    * i.e. have the OSV do everything in one run
+* Get the OSV to consistently get to the fire site and accurately detect fires
 * Write code for the OSV to extinguish fires (bonus objective)
 
 #### Upcoming
-1. Write code for the OSV to extinguish fires (bonus objective)
-2. Write Travel Time algorithm
-    * so the OSV can exit the wall as fast as possible
+* Write code for the OSV to extinguish fires (bonus objective)

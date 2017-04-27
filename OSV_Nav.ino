@@ -19,7 +19,7 @@ Adafruit_DCMotor *motor[4];
 #define COUNTERCLOCKWISE 1
 
 float permissibleErrorForTheta= 0.1;//Coordinate Transmissions are accurate to +/- 0.050 radians
-float permissibleErrorForXY= 0.09; //Coordinate Transmissions are accurate to +/- 0.050 meters
+float permissibleErrorForXY= 0.075; //Coordinate Transmissions are accurate to +/- 0.050 meters
 
 //dictates the speed of the OSV's general movement
 #define MAX_SPEED 255 //Just for kicks
@@ -135,13 +135,13 @@ void loop(){
     moveTowardsPoint(2.0, 0.9);
     face(0);//OSV should be in center of arena, facing East
 
-    moveTowardsPoint(3.1, 0.9);//OSV moves towards far corner of the fire site
-    face(PI / 2);//face north
+    moveTowardsPoint(3.34, 0.9);//OSV moves towards far corner of the fire site
+    face(- PI / 2);//face north
 
     //FIRE DETECTION
     int delayTime= 150;
 
-    while(marker.y - 1.25 < 0){
+    while(marker.y - 1.12 < 0){
         move(AVG_SPEED, BACKWARD);
         delay(delayTime);
         stop();
@@ -161,12 +161,20 @@ void loop(){
 
     delay(5000);
 
-    while(marker.y - 1.42 < 0){
+    while(marker.y - 1.29 < 0){
+        rf.updateLocation();
+
+        //if it's going off course (not moving straight back)
+        //TODO
+        //May need to decrease the window of error
+        if(fabs(marker.theta + PI / 2) < permissibleErrorForTheta){
+            face(- PI / 2);
+        }
+
         move(AVG_SPEED, BACKWARD);
         delay(delayTime);
         stop();
-        rf.updateLocation();
-        delay(delayTime);
+
     }
 
     delay(500);
@@ -264,12 +272,6 @@ void moveTowardsPoint(float desiredX, float desiredY){
 //The method below allows the OSV to face any direction, regardless of its current orientation
 void face(float directionToFace){
 
-    rf.updateLocation();
-
-    for(int i= 0; i < 4; i++){
-        motor[i]->setSpeed(AVG_SPEED);
-    }
-
     float positive2PI_DesiredTheta= directionToFace;
     float positive2PI_CurrentTheta= marker.theta;
 
@@ -327,7 +329,7 @@ void turnCW(){
     delay(DURATION_OF_BURST);
     stop();
 
-    delay(1000);
+    delay(200);
     for(int i= 0; i < 4; i++){
         motor[i]->setSpeed(LOW_SPEED);
     }
@@ -361,7 +363,7 @@ void turnCounterCW(){
     delay(DURATION_OF_BURST);
     stop();
 
-    delay(1000);
+    delay(200);
     for(int i= 0; i < 4; i++){
         motor[i]->setSpeed(LOW_SPEED);
     }
