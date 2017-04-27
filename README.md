@@ -14,7 +14,7 @@ The `OSV_Nav.ino` contains the code for the OSV. Add the following necessary lib
     * For the ultrasonic range sensor
 
 ## Bulletin Board
-###### *Last Updated: Tuesday 04/25/2017*
+###### *Last Updated: Thurs 04/27/2017*
 Message Omkar if something is unclear.
 
 #### How's the OSV coming along?
