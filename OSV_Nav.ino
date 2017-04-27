@@ -88,6 +88,57 @@ void setup(){
 
 void loop(){
 
+    //EXIT THE WALL
+    if(itIsFasterToExitFromA()){//OSV will attempt to exit from A
+
+        rf.println("OSV will move to area A (south area)");
+
+        moveTowardsPoint(Ax - 0.1, Ay - 0.08);
+        face(0);
+        delay(1000);
+
+        int distanceAhead= (int) sonar.ping_cm();//casting unsigned long to an int
+        if(sonar.ping_cm() > 5 && sonar.ping_cm() < 60){
+            rf.println("There's a wall, OSV will try to exit from area B now ");
+            moveTowardsPoint(Bx - 0.1, By + 0.2);
+            moveTowardsPoint(EXIT_Bx, EXIT_By + 0.2);
+        }else{
+            rf.println("There's no wall here, so OSV will exit");
+            moveTowardsPoint(EXIT_Ax, EXIT_Ay - 0.1);
+        }
+
+    }else{
+
+        rf.println("OSV will move to area B (north area)");
+
+        moveTowardsPoint(Bx - 0.1, By + 0.2);
+        face(0);
+        delay(1000);
+        int distanceAhead= (int) sonar.ping_cm();//casting unsigned long to an int
+        if(sonar.ping_cm() > 5 && sonar.ping_cm() < 60){
+            rf.println("There's a wall, OSV will try to exit from area A now");
+            moveTowardsPoint(Ax - 0.1, Ay - 0.08);
+            moveTowardsPoint(EXIT_Ax, EXIT_Ay - 0.1);
+        }else{
+            rf.println("There's no wall here, so OSV will exit");
+            moveTowardsPoint(EXIT_Bx, EXIT_By + 0.2);
+        }
+
+    }
+
+
+    //TRAVEL TOWARDS FIRE SITE
+    move(AVG_SPEED, FORWARD);
+    delay(1000);
+    stop();
+
+    moveTowardsPoint(2.0, 0.9);
+    face(0);//OSV should be in center of arena, facing East
+
+    moveTowardsPoint(3.1, 0.9);//OSV moves towards far corner of the fire site
+    face(PI / 2);//face north
+
+    //FIRE DETECTION
     int delayTime= 150;
 
     while(marker.y - 1.25 < 0){
@@ -127,40 +178,6 @@ void loop(){
     if(fireDetectedBy(FIRE_SENSOR_3) || fireDetectedBy(FIRE_SENSOR_4)){
         rf.transmitData(BASE, FIRE_SITE_C);
     }
-
-
-    //EXIT THE WALL THROUGH POINT A (for now, will incorporate distance sensor later)
-    //all the +/- 0.1/0.2 offsets at for compensating for the marker's offset
-/*
-    moveTowardsPoint(Ax - 0.1, Ay - 0.08);
-    face(0);
-    delay(1000);
-    int distanceAhead= (int) sonar.ping_cm();//casting unsigned long to an int
-    if(sonar.ping_cm() > 5 && sonar.ping_cm() < 60){
-        rf.println("There's a wall, OSV will try to exit from area B");
-        moveTowardsPoint(Bx - 0.1, By + 0.2);
-        moveTowardsPoint(EXIT_Bx, EXIT_By + 0.2);
-    }else{
-        rf.println("There's no wall here");
-        moveTowardsPoint(EXIT_Ax, EXIT_Ay - 0.1);
-    }
-*/
-
-    //TRAVEL TOWARDS FIRE SITE
-/*
-    move(AVG_SPEED, FORWARD);
-    delay(1000);
-    stop();
-
-    moveTowardsPoint(2.0, 0.9);
-    face(0);//OSV should be in center of arena, facing East
-
-    moveTowardsPoint(3.1, 0.9);//OSV moves towards far corner of the fire site
-    face(PI / 2);//face north
-*/
-    //FIRE SITE ROUND 1
-
-    //FIRE SITE ROUND 2
 
     /*
     The statement below will run forever so this current loop() will never
@@ -208,7 +225,6 @@ void moveTowardsPoint(float desiredX, float desiredY){
 
     //while the OSV hasn't arrived at its destination
     while(!arrivedAtDestination){
-        delay(500);//because we're using max speeds so the motors don't burn out in between bursts of movement
 
         distanceTraveled= sqrt( pow( marker.x - initialX, 2) + pow( marker.y - initialY, 2));
 
@@ -216,7 +232,7 @@ void moveTowardsPoint(float desiredX, float desiredY){
         {
             rf.println("OSV has YET to reach its destination");
             //OSV has yet to reach destination so OSV should move forward a little bit
-            move(MAX_SPEED, FORWARD);
+            move(AVG_SPEED, FORWARD);
             delay(DURATION_OF_BURST);
             stop();
 
@@ -225,7 +241,7 @@ void moveTowardsPoint(float desiredX, float desiredY){
         {
             rf.println("OSV has gone PAST its destination");
             //OSV has gone past it's destination so OSV should move a backward a little bit
-            move(MAX_SPEED, BACKWARD);
+            move(AVG_SPEED, BACKWARD);
             delay((int) DURATION_OF_BURST / N);
             stop();
             N++;//this makes sure the OSV doesn't end up in an infinite loop of going backward and forward
@@ -281,9 +297,9 @@ void face(float directionToFace){
     while( fabs(positive2PI_CurrentTheta - positive2PI_DesiredTheta) > permissibleErrorForTheta){
 
         if(rotate_CCW_or_CW(directionToFace) == CLOCKWISE){
-            moveClockwise2();
+            turnCW();
         }else{
-            moveCounterClockwise2();
+            turnCounterCW();
         }
 
         rf.updateLocation();
@@ -296,7 +312,8 @@ void face(float directionToFace){
     }
 }
 
-void moveClockwise2(){
+//Turn CLOCKWISE
+void turnCW(){
     rf.println("K- turning CW");
     motor[0]->setSpeed(LOW_SPEED);
     motor[1]->setSpeed(LOW_SPEED);
@@ -329,7 +346,8 @@ void moveClockwise2(){
     }
 }
 
-void moveCounterClockwise2(){
+//turn COUNTERCLOCKWISE
+void turnCounterCW(){
     rf.println("K- turning CCW");
     motor[0]->setSpeed(MAX_SPEED);
     motor[1]->setSpeed(MAX_SPEED);
@@ -420,10 +438,18 @@ void reportLocation(){
     rf.println("");
 }
 
+//fire detection
 bool fireDetectedBy(int whichSensor){
     return (analogRead(whichSensor) <= 975);
 }
-///TRAVEL TIME ALGORITHM
-int expectedArrivalTime(float x, float y){
 
+//figures if the OSV should try to exit from A or B first
+bool itIsFasterToExitFromA(){
+    rf.updateLocation();
+
+    if(marker.theta < 0 && marker.theta > -PI){
+        return true;
+    }
+
+    return false;
 }
