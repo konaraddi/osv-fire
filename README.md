@@ -19,12 +19,10 @@ Message Omkar if something is unclear.
 
 #### How's the OSV coming along?
 * OSV can do everything up to the basic mission objectives
-    * Unable to consistently backup beside the fire site. It goes off course
-    when backing up.
+    * Unable to stop at the correct positions when backing up
+        * Particularly when attempting to stop at Quadrants A/D
+    * It is able to correct itself to be lined up with the fire site
 
 #### What's next?
 * Get the OSV to consistently get to the fire site and accurately detect fires
-* Write code for the OSV to extinguish fires (bonus objective)
-
-#### Upcoming
 * Write code for the OSV to extinguish fires (bonus objective)

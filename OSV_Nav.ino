@@ -9,7 +9,7 @@
 
 
 SoftwareSerial mySerial(2, 3);
-Marker marker(11); //look at QR code's back for number
+Marker marker(18); //look at QR code's back for number
 RF_Comm rf(&mySerial, &marker);
 
 Adafruit_MotorShield AFMS = Adafruit_MotorShield();
@@ -18,8 +18,8 @@ Adafruit_DCMotor *motor[4];
 #define CLOCKWISE 0
 #define COUNTERCLOCKWISE 1
 
-float permissibleErrorForTheta= 0.1;//Coordinate Transmissions are accurate to +/- 0.050 radians
-float permissibleErrorForXY= 0.075; //Coordinate Transmissions are accurate to +/- 0.050 meters
+float permissibleErrorForTheta= 0.09;//Coordinate Transmissions are accurate to +/- 0.050 radians
+float permissibleErrorForXY= 0.07; //Coordinate Transmissions are accurate to +/- 0.050 meters
 
 //dictates the speed of the OSV's general movement
 #define MAX_SPEED 255 //Just for kicks
@@ -29,17 +29,17 @@ float permissibleErrorForXY= 0.075; //Coordinate Transmissions are accurate to +
 
 //FOR EXITING THE WALL
 //Area A (an area to which the OSV should go to before making an exit)
-#define Ax 0.5
-#define Ay 0.325
+#define Ax 0.4
+#define Ay 0.245
 //Area B (an area to which the OSV should go to before making an exit)
-#define Bx 0.5
-#define By 1.675
+#define Bx 0.4
+#define By 1.89
 //Point of EXIT from area A
-#define EXIT_Ax 1.0
-#define EXIT_Ay 0.325
+#define EXIT_Ax 1.1
+#define EXIT_Ay 0.245
 //Point of EXIT from area B
-#define EXIT_Bx 1.0
-#define EXIT_By 1.675
+#define EXIT_Bx 1.25
+#define EXIT_By 1.875
 
 //DISTANCE SENSOR SETUP BELOW
     #define TRIG_PIN 5 //wherever the trig pin is put in
@@ -83,7 +83,7 @@ void setup(){
     motor[3]=AFMS.getMotor(4);
 
     pinMode(8, OUTPUT);
-    digitalWrite(8, HIGH);
+    digitalWrite(8, LOW);
 }
 
 void loop(){
@@ -93,35 +93,35 @@ void loop(){
 
         rf.println("OSV will move to area A (south area)");
 
-        moveTowardsPoint(Ax - 0.1, Ay - 0.08);
+        moveTowardsPoint(Ax, Ay);
         face(0);
         delay(1000);
 
         int distanceAhead= (int) sonar.ping_cm();//casting unsigned long to an int
         if(sonar.ping_cm() > 5 && sonar.ping_cm() < 60){
             rf.println("There's a wall, OSV will try to exit from area B now ");
-            moveTowardsPoint(Bx - 0.1, By + 0.2);
-            moveTowardsPoint(EXIT_Bx, EXIT_By + 0.2);
+            moveTowardsPoint(Bx, By);
+            moveTowardsPoint(EXIT_Bx, EXIT_By);
         }else{
             rf.println("There's no wall here, so OSV will exit");
-            moveTowardsPoint(EXIT_Ax, EXIT_Ay - 0.1);
+            moveTowardsPoint(EXIT_Ax, EXIT_Ay);
         }
 
     }else{
 
         rf.println("OSV will move to area B (north area)");
 
-        moveTowardsPoint(Bx - 0.1, By + 0.2);
+        moveTowardsPoint(Bx, By);
         face(0);
         delay(1000);
         int distanceAhead= (int) sonar.ping_cm();//casting unsigned long to an int
         if(sonar.ping_cm() > 5 && sonar.ping_cm() < 60){
             rf.println("There's a wall, OSV will try to exit from area A now");
-            moveTowardsPoint(Ax - 0.1, Ay - 0.08);
-            moveTowardsPoint(EXIT_Ax, EXIT_Ay - 0.1);
+            moveTowardsPoint(Ax, Ay);
+            moveTowardsPoint(EXIT_Ax, EXIT_Ay);
         }else{
             rf.println("There's no wall here, so OSV will exit");
-            moveTowardsPoint(EXIT_Bx, EXIT_By + 0.2);
+            moveTowardsPoint(EXIT_Bx, EXIT_By);
         }
 
     }
@@ -132,21 +132,29 @@ void loop(){
     delay(1000);
     stop();
 
-    moveTowardsPoint(2.0, 0.9);
+    moveTowardsPoint(2.0, 0.85);
     face(0);//OSV should be in center of arena, facing East
 
-    moveTowardsPoint(3.34, 0.9);//OSV moves towards far corner of the fire site
-    face(- PI / 2);//face north
+    moveTowardsPoint(3.35, 0.85);//OSV moves towards far corner of the fire site
+    face(- PI / 2);//face south
 
     //FIRE DETECTION
-    int delayTime= 150;
+    int fireSiteDelayTime= 200;
 
-    while(marker.y - 1.12 < 0){
-        move(AVG_SPEED, BACKWARD);
-        delay(delayTime);
-        stop();
+    while(marker.y - 1.20 < 0){
         rf.updateLocation();
-        delay(delayTime);
+
+        //the speed is lower here for greater accuracy
+        move(125, BACKWARD);
+        delay(fireSiteDelayTime);
+        stop();
+
+        //correcting itself when it starts turning
+        if(fabs(marker.theta + PI / 2) > permissibleErrorForTheta){
+            rf.println("OSV is correcting itself (1)");
+            face(- PI / 2); //face south
+        }
+
     }
 
     delay(500);
@@ -161,19 +169,19 @@ void loop(){
 
     delay(5000);
 
-    while(marker.y - 1.29 < 0){
+    while(marker.y - 1.30 < 0){
         rf.updateLocation();
 
-        //if it's going off course (not moving straight back)
-        //TODO
-        //May need to decrease the window of error
-        if(fabs(marker.theta + PI / 2) < permissibleErrorForTheta){
-            face(- PI / 2);
-        }
-
-        move(AVG_SPEED, BACKWARD);
-        delay(delayTime);
+        //the speed is lower here for greater accuracy
+        move(125, BACKWARD);
+        delay(fireSiteDelayTime);
         stop();
+
+        //correcting itself when it starts turning
+        if(fabs(marker.theta + PI / 2) > permissibleErrorForTheta){
+            rf.println("OSV is correcting itself (2)");
+            face(- PI / 2); //face south
+        }
 
     }
 
@@ -187,6 +195,7 @@ void loop(){
         rf.transmitData(BASE, FIRE_SITE_C);
     }
 
+    rf.transmitData(END_MISSION, NO_DATA);
     /*
     The statement below will run forever so this current loop() will never
     finish running. The purpose of this is for the loop() to never repeat.
@@ -442,6 +451,8 @@ void reportLocation(){
 
 //fire detection
 bool fireDetectedBy(int whichSensor){
+    int reading= 0;
+    //TODO take average of 3 trials
     return (analogRead(whichSensor) <= 975);
 }
 
@@ -449,7 +460,20 @@ bool fireDetectedBy(int whichSensor){
 bool itIsFasterToExitFromA(){
     rf.updateLocation();
 
-    if(marker.theta < 0 && marker.theta > -PI){
+    //if it's facing East or West (respectively)
+    if( (marker.theta > -0.2 && marker.theta < 0.2) || (marker.theta > 3.0 && marker.theta < -3.0)){
+
+        //if the OSV is closer to area A than area B
+        if(marker.x < 1.0){
+            return true;
+        }
+
+        return false;
+
+    }
+
+    //if the OSV is facing - PI / 2
+    if(marker.theta < - 1.4 && marker.theta > - 1.8){
         return true;
     }
 
