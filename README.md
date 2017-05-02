@@ -14,7 +14,7 @@ The `OSV_Nav.ino` contains the code for the OSV. Add the following necessary lib
     * For the ultrasonic range sensor
 
 ## Bulletin Board
-###### *Last Updated: Thurs 04/27/2017*
+###### *Last Updated: Tues 05/02/2017*
 Message Omkar if something is unclear.
 
 #### How's the OSV coming along?
@@ -25,4 +25,7 @@ Message Omkar if something is unclear.
 
 #### What's next?
 * Get the OSV to consistently get to the fire site and accurately detect fires
+    * May have the OSV go around the fire site the long way
+        * The OSV goes straight when moving forward so lining up next to the fire
+        site would be less of an issue
 * Write code for the OSV to extinguish fires (bonus objective)
