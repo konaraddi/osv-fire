@@ -42,8 +42,8 @@ float permissibleErrorForXY= 0.07; //Coordinate Transmissions are accurate to +/
 #define EXIT_By 1.875
 
 //DISTANCE SENSOR SETUP BELOW
-    #define TRIG_PIN A4 //wherever the trig pin is put in
-    #define ECHO_PIN A5 //wherever the echo pin is put in
+    #define TRIG_PIN 13//wherever the trig pin is put in
+    #define ECHO_PIN 12 //wherever the echo pin is put in
     #define MAX_DISTANCE 100 //in centimeters
     NewPing sonar(TRIG_PIN, ECHO_PIN, MAX_DISTANCE);
 
