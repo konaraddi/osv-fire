@@ -9,7 +9,7 @@
 
 
 SoftwareSerial mySerial(2, 3);
-Marker marker(110); //look at QR code's back for number
+Marker marker(99); //look at QR code's back for number
 RF_Comm rf(&mySerial, &marker);
 
 Adafruit_MotorShield AFMS = Adafruit_MotorShield();
@@ -42,8 +42,8 @@ float permissibleErrorForXY= 0.07; //Coordinate Transmissions are accurate to +/
 #define EXIT_By 1.875
 
 //DISTANCE SENSOR SETUP BELOW
-    #define TRIG_PIN 5 //wherever the trig pin is put in
-    #define ECHO_PIN 4 //wherever the echo pin is put in
+    #define TRIG_PIN A4 //wherever the trig pin is put in
+    #define ECHO_PIN A5 //wherever the echo pin is put in
     #define MAX_DISTANCE 100 //in centimeters
     NewPing sonar(TRIG_PIN, ECHO_PIN, MAX_DISTANCE);
 
@@ -126,46 +126,11 @@ void loop(){
 
     }
 
-    moveTowardsPoint(2.0, 0.85); //somewhat in center of arena
-    rf.println("IN MIDDLE OF ARENA");
+    moveTowardsPoint(2.0, 0.85); //somewhat in middle
 
-    moveTowardsPoint(2.44, 0.85);//SW of fire site
-    rf.println("BOTTOM LEFT CORNER OF FIRE SITE");
+    moveTowardsPoint(3.35, 0.85);//OSV moves towards far corner of the fire site
+    face(- PI / 2);//face south
 
-    moveTowardsPoint(2.44, 1.9);//NW of fire site
-    rf.println("TOP LEFT CORNER");
-
-    //THIS IS WHERE THE CAMERA LOSES SITE OF THE MARKER ON THE OSV!!!
-
-    moveTowardsPoint(3.3, 1.9);//NE of fire site
-    rf.println("TOP RIGHT CORNER");
-
-    moveTowardsPoint(3.3, 1.55); //go next to Quadrants B & C
-    rf.println("BOTTOM LEFT CORNER");
-
-    delay(500);
-    if(fireDetectedBy(FIRE_SENSOR_1) || fireDetectedBy(FIRE_SENSOR_2)){
-        rf.transmitData(BASE, FIRE_SITE_B);
-    }
-
-    delay(500);
-    if(fireDetectedBy(FIRE_SENSOR_3) || fireDetectedBy(FIRE_SENSOR_4)){
-        rf.transmitData(BASE, FIRE_SITE_C);
-    }
-
-    moveTowardsPoint(3.6, 1.33);//go next to Quadrants A & D
-
-    delay(500);
-    if(fireDetectedBy(FIRE_SENSOR_1) || fireDetectedBy(FIRE_SENSOR_2)){
-        rf.transmitData(BASE, FIRE_SITE_A);
-    }
-
-    delay(500);
-    if(fireDetectedBy(FIRE_SENSOR_3) || fireDetectedBy(FIRE_SENSOR_4)){
-        rf.transmitData(BASE, FIRE_SITE_D);
-    }
-
-    /*
     //FIRE DETECTION
     int fireSiteDelayTime= 200;
 
@@ -222,7 +187,7 @@ void loop(){
     if(fireDetectedBy(FIRE_SENSOR_3) || fireDetectedBy(FIRE_SENSOR_4)){
         rf.transmitData(BASE, FIRE_SITE_C);
     }
-    */
+
 
     rf.transmitData(END_MISSION, NO_DATA);
     /*
