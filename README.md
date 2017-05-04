@@ -18,13 +18,9 @@ The `OSV_Nav.ino` contains the code for the OSV. Add the following necessary lib
 Message Omkar if something is unclear.
 
 #### How's the OSV coming along?
-* OSV can do everything up to the basic mission objectives
-    * Unable to stop at the correct positions when backing up
-        * Particularly when attempting to stop at Quadrants A/D
-    * It is able to correct itself to be lined up with the fire site
-    * Attempting to get the OSV to lap around the fire site the long way
-        * So the OSV doesn't need to correct itself and doesn't need to move backward
+* OSV can do everything
+    * However, due to a damaged wheel, we still need to check that the OSV can get to the fire site
 
 #### What's next?
-* Get the OSV to consistently stop by the right spots near the fire site and accurately detect fires
+* Get the OSV to consistently stop by the right spots near the fire site 
 * Write code for the OSV to extinguish fires (bonus objective)
