@@ -88,6 +88,7 @@ void setup(){
 
 void loop(){
 
+    //DETECTING & EXTINGUISHING FIRES
     delay(2000);
     detectFires();
 
@@ -141,6 +142,7 @@ void loop(){
         }
 
     }
+    //END OF EXIT THE WALL
 
     moveTowardsPoint(2.0, 0.85); //somewhat in middle
 
@@ -426,7 +428,11 @@ void reportLocation(){
 bool fireDetectedBy(int whichSensor){
     int reading= 0;
     //TODO take average of 3 trials
-    return (analogRead(whichSensor) <= 975);
+    rf.println("");
+    rf.print(whichSensor);
+    rf.print(": ");
+    rf.println(analogRead(whichSensor));
+    return (analogRead(whichSensor) <= 925);
 }
 
 //figures if the OSV should try to exit from A or B first
