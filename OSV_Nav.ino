@@ -128,17 +128,17 @@ void loop(){
 
     moveTowardsPoint(2.0, 0.85); //somewhat in middle
 
-    moveTowardsPoint(3.35, 0.85);//OSV moves towards far corner of the fire site
+    moveTowardsPoint(3.4, 0.85);//OSV moves towards far corner of the fire site
     face(- PI / 2);//face south
 
     //FIRE DETECTION
     int fireSiteDelayTime= 200;
 
-    while(marker.y - 1.20 < 0){
+    while(marker.y - 1.16 < 0){
         rf.updateLocation();
 
         //the speed is lower here for greater accuracy
-        move(125, BACKWARD);
+        move(150, BACKWARD);
         delay(fireSiteDelayTime);
         stop();
 
@@ -166,7 +166,7 @@ void loop(){
         rf.updateLocation();
 
         //the speed is lower here for greater accuracy
-        move(125, BACKWARD);
+        move(150, BACKWARD);
         delay(fireSiteDelayTime);
         stop();
 
