@@ -14,7 +14,7 @@ The `OSV_Nav.ino` contains the code for the OSV. Add the following necessary lib
     * For the ultrasonic range sensor
 
 ## Bulletin Board
-###### *Last Updated: Tues 05/02/2017*
+###### *Last Updated: Wed 05/03/2017*
 Message Omkar if something is unclear.
 
 #### How's the OSV coming along?
@@ -22,10 +22,9 @@ Message Omkar if something is unclear.
     * Unable to stop at the correct positions when backing up
         * Particularly when attempting to stop at Quadrants A/D
     * It is able to correct itself to be lined up with the fire site
+    * Attempting to get the OSV to lap around the fire site the long way
+        * So the OSV doesn't need to correct itself and doesn't need to move backward
 
 #### What's next?
-* Get the OSV to consistently get to the fire site and accurately detect fires
-    * May have the OSV go around the fire site the long way
-        * The OSV goes straight when moving forward so lining up next to the fire
-        site would be less of an issue
+* Get the OSV to consistently stop by the right spots near the fire site and accurately detect fires
 * Write code for the OSV to extinguish fires (bonus objective)

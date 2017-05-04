@@ -9,7 +9,7 @@
 
 
 SoftwareSerial mySerial(2, 3);
-Marker marker(18); //look at QR code's back for number
+Marker marker(110); //look at QR code's back for number
 RF_Comm rf(&mySerial, &marker);
 
 Adafruit_MotorShield AFMS = Adafruit_MotorShield();
@@ -126,18 +126,46 @@ void loop(){
 
     }
 
+    moveTowardsPoint(2.0, 0.85); //somewhat in center of arena
+    rf.println("IN MIDDLE OF ARENA");
 
-    //TRAVEL TOWARDS FIRE SITE
-    move(AVG_SPEED, FORWARD);
-    delay(1000);
-    stop();
+    moveTowardsPoint(2.44, 0.85);//SW of fire site
+    rf.println("BOTTOM LEFT CORNER OF FIRE SITE");
 
-    moveTowardsPoint(2.0, 0.85);
-    face(0);//OSV should be in center of arena, facing East
+    moveTowardsPoint(2.44, 1.9);//NW of fire site
+    rf.println("TOP LEFT CORNER");
 
-    moveTowardsPoint(3.35, 0.85);//OSV moves towards far corner of the fire site
-    face(- PI / 2);//face south
+    //THIS IS WHERE THE CAMERA LOSES SITE OF THE MARKER ON THE OSV!!!
 
+    moveTowardsPoint(3.3, 1.9);//NE of fire site
+    rf.println("TOP RIGHT CORNER");
+
+    moveTowardsPoint(3.3, 1.55); //go next to Quadrants B & C
+    rf.println("BOTTOM LEFT CORNER");
+
+    delay(500);
+    if(fireDetectedBy(FIRE_SENSOR_1) || fireDetectedBy(FIRE_SENSOR_2)){
+        rf.transmitData(BASE, FIRE_SITE_B);
+    }
+
+    delay(500);
+    if(fireDetectedBy(FIRE_SENSOR_3) || fireDetectedBy(FIRE_SENSOR_4)){
+        rf.transmitData(BASE, FIRE_SITE_C);
+    }
+
+    moveTowardsPoint(3.6, 1.33);//go next to Quadrants A & D
+
+    delay(500);
+    if(fireDetectedBy(FIRE_SENSOR_1) || fireDetectedBy(FIRE_SENSOR_2)){
+        rf.transmitData(BASE, FIRE_SITE_A);
+    }
+
+    delay(500);
+    if(fireDetectedBy(FIRE_SENSOR_3) || fireDetectedBy(FIRE_SENSOR_4)){
+        rf.transmitData(BASE, FIRE_SITE_D);
+    }
+
+    /*
     //FIRE DETECTION
     int fireSiteDelayTime= 200;
 
@@ -194,6 +222,7 @@ void loop(){
     if(fireDetectedBy(FIRE_SENSOR_3) || fireDetectedBy(FIRE_SENSOR_4)){
         rf.transmitData(BASE, FIRE_SITE_C);
     }
+    */
 
     rf.transmitData(END_MISSION, NO_DATA);
     /*
@@ -247,7 +276,7 @@ void moveTowardsPoint(float desiredX, float desiredY){
 
         if(distanceTraveled < distanceItShouldTravel - permissibleErrorForXY)
         {
-            rf.println("OSV has YET to reach its destination");
+            //rf.println("OSV has YET to reach its destination");
             //OSV has yet to reach destination so OSV should move forward a little bit
             move(AVG_SPEED, FORWARD);
             delay(DURATION_OF_BURST);
@@ -256,7 +285,7 @@ void moveTowardsPoint(float desiredX, float desiredY){
         }
         else if(distanceTraveled > distanceItShouldTravel + permissibleErrorForXY)
         {
-            rf.println("OSV has gone PAST its destination");
+            //rf.println("OSV has gone PAST its destination");
             //OSV has gone past it's destination so OSV should move a backward a little bit
             move(AVG_SPEED, BACKWARD);
             delay((int) DURATION_OF_BURST / N);
@@ -272,7 +301,7 @@ void moveTowardsPoint(float desiredX, float desiredY){
         }
 
         rf.updateLocation();
-        reportLocation();
+        //reportLocation();
 
     }
 
