@@ -9,7 +9,7 @@
 
 
 SoftwareSerial mySerial(2, 3);
-Marker marker(99); //look at QR code's back for number
+Marker marker(5); //look at QR code's back for number
 RF_Comm rf(&mySerial, &marker);
 
 Adafruit_MotorShield AFMS = Adafruit_MotorShield();
@@ -88,6 +88,22 @@ void setup(){
 
 void loop(){
 
+    delay(2000);
+    detectFires();
+
+    delay(5000);
+
+    digitalWrite(8, HIGH);
+
+    delay(2000);
+
+    digitalWrite(8, LOW);
+    delay(1000);
+
+    rf.transmitData(BONUS, "FIRE EXTINGUISHED");
+
+    while(1);
+
     //EXIT THE WALL
     if(itIsFasterToExitFromA()){//OSV will attempt to exit from A
 
@@ -134,7 +150,7 @@ void loop(){
     //FIRE DETECTION
     int fireSiteDelayTime= 200;
 
-    while(marker.y - 1.16 < 0){
+    while(marker.y - 1.30 < 0){
         rf.updateLocation();
 
         //the speed is lower here for greater accuracy
@@ -150,44 +166,7 @@ void loop(){
 
     }
 
-    delay(500);
-    if(fireDetectedBy(FIRE_SENSOR_1) || fireDetectedBy(FIRE_SENSOR_2)){
-        rf.transmitData(BASE, FIRE_SITE_A);
-    }
-
-    delay(500);
-    if(fireDetectedBy(FIRE_SENSOR_3) || fireDetectedBy(FIRE_SENSOR_4)){
-        rf.transmitData(BASE, FIRE_SITE_D);
-    }
-
-    delay(5000);
-
-    while(marker.y - 1.30 < 0){
-        rf.updateLocation();
-
-        //the speed is lower here for greater accuracy
-        move(150, BACKWARD);
-        delay(fireSiteDelayTime);
-        stop();
-
-        //correcting itself when it starts turning
-        if(fabs(marker.theta + PI / 2) > permissibleErrorForTheta){
-            rf.println("OSV is correcting itself (2)");
-            face(- PI / 2); //face south
-        }
-
-    }
-
-    delay(500);
-    if(fireDetectedBy(FIRE_SENSOR_1) || fireDetectedBy(FIRE_SENSOR_2)){
-        rf.transmitData(BASE, FIRE_SITE_B);
-    }
-
-    delay(500);
-    if(fireDetectedBy(FIRE_SENSOR_3) || fireDetectedBy(FIRE_SENSOR_4)){
-        rf.transmitData(BASE, FIRE_SITE_C);
-    }
-
+    detectFires();
 
     rf.transmitData(END_MISSION, NO_DATA);
     /*
@@ -472,4 +451,29 @@ bool itIsFasterToExitFromA(){
     }
 
     return false;
+}
+
+void detectFires(){
+
+    //if any of the sensors go off
+    if(fireDetectedBy(FIRE_SENSOR_1)|| fireDetectedBy(FIRE_SENSOR_2)
+        || fireDetectedBy(FIRE_SENSOR_3) || fireDetectedBy(FIRE_SENSOR_4)){
+
+        if(fireDetectedBy(FIRE_SENSOR_1) || fireDetectedBy(FIRE_SENSOR_2)){
+            rf.transmitData(BASE, FIRE_SITE_B);
+        }else{
+            rf.transmitData(BASE, FIRE_SITE_A);
+        }
+
+        if(fireDetectedBy(FIRE_SENSOR_3) || fireDetectedBy(FIRE_SENSOR_4)){
+            rf.transmitData(BONUS, FIRE_SITE_C);
+        }else{
+            rf.transmitData(BONUS, FIRE_SITE_D);
+        }
+
+    }else{
+        rf.transmitData(BASE, FIRE_SITE_A);
+        rf.transmitData(BONUS, FIRE_SITE_D);
+    }
+
 }
