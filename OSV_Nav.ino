@@ -67,6 +67,7 @@ while going around the Fire Base.
 */
 
 void setup(){
+
     rf.transmitData(START_MISSION, NO_DATA);
     rf.transmitData(NAV, FIRE);
     rf.updateLocation();
@@ -87,23 +88,6 @@ void setup(){
 }
 
 void loop(){
-
-    //DETECTING & EXTINGUISHING FIRES
-    delay(2000);
-    detectFires();
-
-    delay(5000);
-
-    digitalWrite(8, HIGH);
-
-    delay(2000);
-
-    digitalWrite(8, LOW);
-    delay(1000);
-
-    rf.transmitData(BONUS, "FIRE EXTINGUISHED");
-
-    while(1);
 
     //EXIT THE WALL
     if(itIsFasterToExitFromA()){//OSV will attempt to exit from A
@@ -168,7 +152,20 @@ void loop(){
 
     }
 
+    //DETECTING & EXTINGUISHING FIRES
+    delay(500);
     detectFires();
+
+    delay(5000);
+
+    digitalWrite(8, HIGH);
+
+    delay(2000);
+
+    digitalWrite(8, LOW);
+    delay(1000);
+
+    rf.transmitData(BONUS, "FIRE EXTINGUISHED");
 
     rf.transmitData(END_MISSION, NO_DATA);
     /*
@@ -424,17 +421,6 @@ void reportLocation(){
     rf.println("");
 }
 
-//fire detection
-bool fireDetectedBy(int whichSensor){
-    int reading= 0;
-    //TODO take average of 3 trials
-    rf.println("");
-    rf.print(whichSensor);
-    rf.print(": ");
-    rf.println(analogRead(whichSensor));
-    return (analogRead(whichSensor) <= 925);
-}
-
 //figures if the OSV should try to exit from A or B first
 bool itIsFasterToExitFromA(){
     rf.updateLocation();
@@ -457,6 +443,17 @@ bool itIsFasterToExitFromA(){
     }
 
     return false;
+}
+
+//fire detection
+bool fireDetectedBy(int whichSensor){
+    int reading= 0;
+    //TODO take average of 3 trials
+    rf.println("");
+    rf.print(whichSensor);
+    rf.print(": ");
+    rf.println(analogRead(whichSensor));
+    return (analogRead(whichSensor) <= 925);
 }
 
 void detectFires(){
