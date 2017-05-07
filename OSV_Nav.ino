@@ -1,4 +1,5 @@
 //Copyright 2017 ENES100 (0201) Fire Team Members
+#define crucialY 1.30
 
 #include <math.h>
 #include "enes100.h"
@@ -85,6 +86,7 @@ void setup(){
 
     pinMode(8, OUTPUT);
     digitalWrite(8, LOW);
+
 }
 
 void loop(){
@@ -136,7 +138,7 @@ void loop(){
     //FIRE DETECTION
     int fireSiteDelayTime= 200;
 
-    while(marker.y - 1.30 < 0){
+    while(marker.y - crucialY < 0){//The y-value here may require tweaking, define at the top of the file
         rf.updateLocation();
 
         //the speed is lower here for greater accuracy
@@ -155,11 +157,9 @@ void loop(){
     //DETECTING & EXTINGUISHING FIRES
     delay(500);
     detectFires();
-
     delay(5000);
 
     digitalWrite(8, HIGH);
-
     delay(2000);
 
     digitalWrite(8, LOW);
@@ -168,11 +168,11 @@ void loop(){
     rf.transmitData(BONUS, "FIRE EXTINGUISHED");
 
     rf.transmitData(END_MISSION, NO_DATA);
+
     /*
     The statement below will run forever so this current loop() will never
     finish running. The purpose of this is for the loop() to never repeat.
     */
-
     while(1);
 }
 
