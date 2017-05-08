@@ -1,5 +1,5 @@
 //Copyright 2017 ENES100 (0201) Fire Team Members
-#define crucialY 1.30
+#define crucialY 1.275
 
 #include <math.h>
 #include "enes100.h"
@@ -10,7 +10,7 @@
 
 
 SoftwareSerial mySerial(2, 3);
-Marker marker(5); //look at QR code's back for number
+Marker marker(103); //look at QR code's back for number
 RF_Comm rf(&mySerial, &marker);
 
 Adafruit_MotorShield AFMS = Adafruit_MotorShield();
@@ -39,7 +39,7 @@ float permissibleErrorForXY= 0.07; //Coordinate Transmissions are accurate to +/
 #define EXIT_Ax 1.1
 #define EXIT_Ay 0.245
 //Point of EXIT from area B
-#define EXIT_Bx 1.25
+#define EXIT_Bx 1.27
 #define EXIT_By 1.875
 
 //DISTANCE SENSOR SETUP BELOW
@@ -132,7 +132,7 @@ void loop(){
 
     moveTowardsPoint(2.0, 0.85); //somewhat in middle
 
-    moveTowardsPoint(3.4, 0.85);//OSV moves towards far corner of the fire site
+    moveTowardsPoint(3.41, 0.85);//OSV moves towards far corner of the fire site
     face(- PI / 2);//face south
 
     //FIRE DETECTION
@@ -160,7 +160,16 @@ void loop(){
     delay(5000);
 
     digitalWrite(8, HIGH);
-    delay(2000);
+
+    delay(800);
+    move(AVG_SPEED, FORWARD);
+    delay(800);
+
+    stop();
+
+    move(AVG_SPEED, BACKWARD);
+    delay(1600);
+    stop();
 
     digitalWrite(8, LOW);
     delay(1000);
@@ -244,7 +253,7 @@ void moveTowardsPoint(float desiredX, float desiredY){
         }
 
         rf.updateLocation();
-        //reportLocation();
+        reportLocation();
 
     }
 
