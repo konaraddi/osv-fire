@@ -130,7 +130,7 @@ void loop(){
     }
     //END OF EXIT THE WALL
 
-    moveTowardsPoint(2.0, 0.85); //somewhat in middle
+    moveTowardsPoint(1.96, 1.0); //somewhat in middle
 
     moveTowardsPoint(3.41, 0.85);//OSV moves towards far corner of the fire site
     face(- PI / 2);//face south
