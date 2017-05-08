@@ -36,7 +36,7 @@ float permissibleErrorForXY= 0.07; //Coordinate Transmissions are accurate to +/
 #define Bx 0.4
 #define By 1.89
 //Point of EXIT from area A
-#define EXIT_Ax 1.1
+#define EXIT_Ax 1.2
 #define EXIT_Ay 0.245
 //Point of EXIT from area B
 #define EXIT_Bx 1.27
@@ -130,7 +130,7 @@ void loop(){
     }
     //END OF EXIT THE WALL
 
-    moveTowardsPoint(1.96, 1.0); //somewhat in middle
+    moveTowardsPoint(1.94, 1.0); //somewhat in middle
 
     moveTowardsPoint(3.41, 0.85);//OSV moves towards far corner of the fire site
     face(- PI / 2);//face south
