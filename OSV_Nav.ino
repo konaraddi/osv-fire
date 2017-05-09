@@ -1,5 +1,4 @@
 //Copyright 2017 ENES100 (0201) Fire Team Members
-#define crucialY 1.275
 
 #include <math.h>
 #include "enes100.h"
@@ -138,7 +137,7 @@ void loop(){
     //FIRE DETECTION
     int fireSiteDelayTime= 200;
 
-    while(marker.y - crucialY < 0){//The y-value here may require tweaking, define at the top of the file
+    while(marker.y - 1.275 < 0){//The y-value here may require tweaking, define at the top of the file
         rf.updateLocation();
 
         //the speed is lower here for greater accuracy
@@ -454,14 +453,8 @@ bool itIsFasterToExitFromA(){
     return false;
 }
 
-//fire detection
 bool fireDetectedBy(int whichSensor){
     int reading= 0;
-    //TODO take average of 3 trials
-    rf.println("");
-    rf.print(whichSensor);
-    rf.print(": ");
-    rf.println(analogRead(whichSensor));
     return (analogRead(whichSensor) <= 925);
 }
 
