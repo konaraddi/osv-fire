@@ -1,5 +1,3 @@
-//Copyright 2017 ENES100 (0201) Fire Team Members
-
 #include <math.h>
 #include "enes100.h"
 #include <Wire.h>

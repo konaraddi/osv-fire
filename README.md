@@ -1,5 +1,9 @@
-# OSV Navigation Code
-&copy; 2017 ENES100 (0201) Fire Team Members
+# OSV_Fire
+
+This repository contains the code used by the 2017 Section 0201 Fire Group.
+The Fire Group's Over Sand Vehicle (OSV) was capable of navigating a course
+with obstacles, detecting fires, detecting the location of fires, extinguishing
+fires, and communicating with a computer using RF.
 
 ## Requirements
 The `OSV_Nav.ino` contains the code for the OSV. Add the following necessary libraries before uploading to OSV:
@@ -12,15 +16,3 @@ The `OSV_Nav.ino` contains the code for the OSV. Add the following necessary lib
     the Arduino IDE)
 4. [NewPing](https://bitbucket.org/teckel12/arduino-new-ping/downloads/)
     * For the ultrasonic range sensor
-
-## Bulletin Board
-###### *Last Updated: Wed 05/03/2017*
-Message Omkar if something is unclear.
-
-#### How's the OSV coming along?
-* OSV can do everything
-    * However, due to a damaged wheel, we still need to check that the OSV can get to the fire site
-
-#### What's next?
-* Get the OSV to consistently stop by the right spots near the fire site 
-* Write code for the OSV to extinguish fires (bonus objective)
