@@ -6,7 +6,7 @@ with obstacles, detecting fires, detecting the location of fires, extinguishing
 fires, and communicating with a computer using RF.
 
 ## Requirements
-The `OSV_Nav.ino` contains the code for the OSV. Add the following necessary libraries before uploading to OSV:
+Add the following necessary libraries before uploading to OSV:
 1. [umdenes100](https://github.com/umdenes100/arduinolibrary)
     * Rename to `enes100`
 2. [Adafruit_MotorShield](https://github.com/adafruit/Adafruit_Motor_Shield_V2_Library)
