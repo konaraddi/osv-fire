@@ -16,3 +16,14 @@ Add the following necessary libraries before uploading to OSV:
     the Arduino IDE)
 4. [NewPing](https://bitbucket.org/teckel12/arduino-new-ping/downloads/)
     * For the ultrasonic range sensor
+
+## Team Members and Roles
+
+**Ryan Howard**, Lead <br/>
+**Sean O'Connor**, Power <br/>
+**[Omkar Konaraddi](https://konaraddio.github.io)**, Navigation <br/>
+**Brittainy Sechler**, Structure <br/>
+**Roshan Rao**, Mechanics <br/>
+**Zach Peters**, Propulsion <br/>
+**Jimmy Alderisio**, Mission Performance <br/>
+**Keaton Paradeses**, Electronics <br/>
