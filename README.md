@@ -27,3 +27,7 @@ Add the following necessary libraries before uploading to OSV:
 **Zach Peters**, Propulsion <br/>
 **Jimmy Alderisio**, Mission Performance <br/>
 **Keaton Paradeses**, Electronics <br/>
+
+## Our OSV
+
+![Our OSV](./osv_run.jpg)
