@@ -5,7 +5,7 @@
 This repository contains the code used by the 2017 Section 0201 Fire Group.
 The Fire Group's Over Sand Vehicle (OSV) navigated a course
 with obstacles, detected fires, detected the location of fires, extinguished
-fires, and communicated with a computer using RF.
+fires, and sent results to a remote computer, in real-time, using RF.
 
 ## Arena and Summary of Path
 
@@ -39,11 +39,11 @@ Add the following necessary libraries before uploading to OSV:
 
 ## Team Members and Roles
 
-**Ryan Howard**, Lead <br/>
-**Sean O'Connor**, Power <br/>
-**[Omkar Konaraddi](https://konaraddio.github.io)**, Navigation <br/>
-**Brittainy Sechler**, Structure <br/>
-**Roshan Rao**, Mechanics <br/>
-**Zach Peters**, Propulsion <br/>
-**Jimmy Alderisio**, Mission Performance <br/>
-**Keaton Paradeses**, Electronics <br/>
+**Ryan Howard**, Lead  
+**Sean O'Connor**, Power  
+**[Omkar Konaraddi](https://konaraddi.com)**, Navigation  
+**Brittainy Sechler**, Structure   
+**Roshan Rao**, Mechanics   
+**Zach Peters**, Propulsion  
+**Jimmy Alderisio**, Mission Performance  
+**Keaton Paradeses**, Electronics  
